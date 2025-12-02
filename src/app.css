@@ -1,27 +1,55 @@
-/* Chalkboard Theme - Light Educational Design for RSA Visualization */
+/* ShamirLab - Dark Deep Theme inspired by mathematical backgrounds */
 
 /* Import KaTeX CSS for math rendering */
 @import 'katex/dist/katex.min.css';
 
 :root {
-  /* Chalkboard color palette */
-  --bg-cream: #FFFEF7;
-  --bg-paper: #F5F5DC;
-  --text-dark: #1a1a1a;
-  --text-charcoal: #2C3E50;
-  --accent-slate: #4A5568;
-  --accent-coral: #E74C3C;
-  --accent-green: #27AE60;
-  --border-gray: #95A5A6;
+  /* Dark Deep Color Palette - inspired by background3.jpg */
+  /* Deep blacks and dark grays like the mathematical canvas */
+  --bg-deep: #0a0a0a;
+  --bg-dark: #121212;
+  --bg-card: rgba(18, 18, 18, 0.95);
+  --bg-hover: rgba(30, 30, 30, 0.8);
   
-  /* Typography */
-  --font-mono: 'Courier New', 'IBM Plex Mono', monospace;
-  --font-serif: 'Georgia', 'Crimson Text', serif;
+  /* Image version for cache busting */
+  --div-image-url: url('/div.jpg');
+  
+  /* White formulas and text - like equations on dark background */
+  --text-primary: #f5f5f5;
+  --text-secondary: #d4d4d4;
+  --text-tertiary: #a3a3a3;
+  --text-formula: #ffffff;
+  
+  /* Accent colors - subtle, like highlights in the vortex */
+  --accent-blue: #60a5fa;
+  --accent-purple: #a78bfa;
+  --accent-cyan: #22d3ee;
+  --accent-green: #34d399;
+  
+  /* Borders - subtle, like equation lines */
+  --border-dark: rgba(255, 255, 255, 0.1);
+  --border-medium: rgba(255, 255, 255, 0.15);
+  --border-light: rgba(255, 255, 255, 0.2);
+  
+  /* Typography - system fonts only */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'Courier New', 'Consolas', monospace;
   --font-math: 'Latin Modern Math', 'Cambria Math', serif;
   
   /* Base font size */
   font-size: 16px;
   line-height: 1.6;
+  
+  /* Shadows - deep and atmospheric */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+  
+  /* Glow effects for depth */
+  --glow-blue: 0 0 20px rgba(96, 165, 250, 0.4);
+  --glow-green: 0 0 20px rgba(52, 211, 153, 0.4);
+  --glow-red: 0 0 20px rgba(239, 68, 68, 0.4);
   
   /* Rendering optimizations */
   font-synthesis: none;
@@ -41,10 +69,11 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--bg-cream) 0%, var(--bg-paper) 100%);
-  color: var(--text-charcoal);
-  font-family: var(--font-serif);
-  font-size: 18px;
+  background: var(--bg-deep);
+  position: relative;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
 }
 
 #app {
@@ -55,8 +84,8 @@ body {
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-mono);
-  color: var(--text-charcoal);
+  font-family: var(--font-sans);
+  color: var(--text-primary);
   font-weight: 600;
   line-height: 1.3;
 }
@@ -80,34 +109,39 @@ p {
 
 /* Links */
 a {
-  color: var(--accent-slate);
-  text-decoration: underline;
+  color: var(--accent-blue);
+  text-decoration: none;
   transition: color 0.2s ease;
+  font-weight: 500;
 }
 
 a:hover {
-  color: var(--accent-coral);
+  color: var(--accent-cyan);
+  text-decoration: underline;
 }
 
 /* Code and technical text */
 code, pre {
   font-family: var(--font-mono);
-  background: rgba(74, 85, 104, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   padding: 0.2em 0.4em;
   border-radius: 3px;
   font-size: 0.9em;
+  color: var(--accent-cyan);
 }
 
 pre {
   padding: 1rem;
   overflow-x: auto;
   margin: 1rem 0;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-dark);
 }
 
 /* Strong emphasis */
 strong {
-  font-weight: 700;
-  color: var(--accent-slate);
+  font-weight: 600;
+  color: var(--text-formula);
 }
 
 /* Lists */
@@ -120,9 +154,20 @@ li {
   margin-bottom: 0.5rem;
 }
 
+/* Selection - dark theme */
+::selection {
+  background: var(--accent-blue);
+  color: var(--bg-deep);
+}
+
+::-moz-selection {
+  background: var(--accent-blue);
+  color: var(--bg-deep);
+}
+
 /* Buttons - global defaults */
 button {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   cursor: pointer;
   border: none;
   outline: none;
@@ -130,39 +175,33 @@ button {
 }
 
 button:focus-visible {
-  outline: 3px solid var(--accent-slate);
+  outline: 2px solid var(--accent-blue);
   outline-offset: 2px;
 }
 
-/* Selection styling */
-::selection {
-  background: var(--accent-slate);
-  color: white;
-}
-
-/* Scrollbar styling */
+/* Scrollbar styling - dark theme */
 ::-webkit-scrollbar {
   width: 12px;
   height: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-paper);
+  background: var(--bg-dark);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-gray);
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-slate);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 /* Math notation (KaTeX overrides) */
 .katex {
   font-size: 1.1em;
-  color: var(--text-charcoal);
+  color: var(--text-formula);
 }
 
 .katex-display {
@@ -186,7 +225,7 @@ button:focus-visible {
 
 /* Focus styles for keyboard navigation */
 *:focus-visible {
-  outline: 3px solid var(--accent-slate);
+  outline: 2px solid var(--accent-blue);
   outline-offset: 2px;
 }
 
@@ -217,9 +256,6 @@ button:focus-visible {
 @media print {
   body {
     background: white;
-  }
-  
-  button {
-    display: none;
+    color: black;
   }
 }

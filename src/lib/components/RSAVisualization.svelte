@@ -3,11 +3,17 @@
   import StepIndicator from './StepIndicator.svelte';
   import NumberInput from './NumberInput.svelte';
   import MathNotation from './MathNotation.svelte';
+  import AliceAndBob from './AliceAndBob.svelte';
+  import FactorizationVisualization from './FactorizationVisualization.svelte';
+  import PracticeMode from './PracticeMode.svelte';
+  import ModularExponentiationViz from './ModularExponentiationViz.svelte';
   import { RSAKeyGenerator, rsaEncrypt, rsaDecrypt, getCommonExponents } from '../algorithms/rsa.js';
   import { isPrime } from '../algorithms/primeUtils.js';
+  import { tStore } from '../i18n/store.js';
   
   // State
   let currentStep = 1;
+  let activeTab = 'learn'; // 'learn', 'alice-bob', 'factorize', 'practice'
   let p = 17;
   let q = 23;
   let n = null;
@@ -178,15 +184,50 @@
 </script>
 
 <div class="rsa-visualization">
+  <div class="back-button-container">
+    <a href="#/" class="back-button">← {$tStore('nav.home')}</a>
+  </div>
+  
   <header class="header">
-    <h1>RSA Encryption Visualized</h1>
+    <h1>{$tStore('rsa.title')}</h1>
     <p class="intro">
-      RSA is a public-key cryptosystem widely used for secure data transmission. 
-      Let's explore how it works, step by step.
+      {$tStore('rsa.intro')}
     </p>
   </header>
   
-  <StepIndicator {currentStep} totalSteps={7} />
+  <div class="tabs">
+    <button 
+      class="tab" 
+      class:active={activeTab === 'learn'}
+      on:click={() => activeTab = 'learn'}
+    >
+      Обучение
+    </button>
+    <button 
+      class="tab"
+      class:active={activeTab === 'alice-bob'}
+      on:click={() => activeTab = 'alice-bob'}
+    >
+      Алиса и Боб
+    </button>
+    <button 
+      class="tab"
+      class:active={activeTab === 'factorize'}
+      on:click={() => activeTab = 'factorize'}
+    >
+      Взлом
+    </button>
+    <button 
+      class="tab"
+      class:active={activeTab === 'practice'}
+      on:click={() => activeTab = 'practice'}
+    >
+      Практика
+    </button>
+  </div>
+  
+  {#if activeTab === 'learn'}
+    <StepIndicator {currentStep} totalSteps={7} />
   
   <div class="step-content">
     {#if currentStep === 1}
@@ -198,7 +239,7 @@
             We start by choosing two different prime numbers, <strong>p</strong> and <strong>q</strong>.
           </p>
           <p class="security-note">
-            ⚠️ In practice, these would be very large primes (hundreds of digits). 
+            Внимание: На практике используются очень большие простые числа (сотни цифр). 
             We use small primes here for educational purposes.
           </p>
         </div>
@@ -391,6 +432,15 @@
               <MathNotation formula={'c = ' + message + '^{' + e + '} \\bmod ' + n} displayMode={true} />
             </div>
             
+            {#if step6Data.steps && step6Data.steps.length > 0}
+              <ModularExponentiationViz 
+                base={parseInt(message)} 
+                exponent={parseInt(e)} 
+                modulus={n}
+                steps={step6Data.steps}
+              />
+            {/if}
+            
             <div class="calc-result">
               <MathNotation formula={'c = ' + step6Data.ciphertext} displayMode={true} />
             </div>
@@ -427,6 +477,15 @@
               <MathNotation formula={'m = ' + ciphertext + '^{' + d + '} \\bmod ' + n} displayMode={true} />
             </div>
             
+            {#if step7Data.steps && step7Data.steps.length > 0}
+              <ModularExponentiationViz 
+                base={ciphertext} 
+                exponent={d} 
+                modulus={n}
+                steps={step7Data.steps}
+              />
+            {/if}
+            
             <div class="calc-result">
               <MathNotation formula={'m = ' + step7Data.message} displayMode={true} />
             </div>
@@ -435,7 +494,7 @@
         
         {#if decryptedMessage === parseInt(message)}
           <div class="success-box">
-            <h3>✓ Success!</h3>
+            <h3>Успех!</h3>
             <p>
               We've successfully recovered the original message: <strong>{decryptedMessage}</strong>
             </p>
@@ -448,8 +507,21 @@
       </div>
     {/if}
   </div>
+  {/if}
   
-  {#if currentStep === 7}
+  {#if activeTab === 'alice-bob'}
+    <AliceAndBob />
+  {/if}
+  
+  {#if activeTab === 'factorize'}
+    <FactorizationVisualization n={n || 391} p={p} q={q} />
+  {/if}
+  
+  {#if activeTab === 'practice'}
+    <PracticeMode />
+  {/if}
+  
+  {#if activeTab === 'learn' && currentStep === 7}
     <div class="usage-tip">
       <p>
         <strong>Хотите попробовать еще раз?</strong> Нажмите кнопку "Start Over" выше, 
@@ -486,9 +558,105 @@
 
 <style>
   .rsa-visualization {
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
+    position: relative;
+  }
+  
+  @media (max-width: 768px) {
+    .rsa-visualization {
+      padding: 1rem;
+    }
+  }
+  
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--border-dark);
+    flex-wrap: wrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  @media (max-width: 768px) {
+    .tabs {
+      gap: 0.25rem;
+    }
+    
+    .tab {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+  }
+  
+  .tab {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 1rem;
+    position: relative;
+  }
+  
+  .tab::before {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent-blue);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+  
+  .tab:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .tab.active {
+    color: var(--accent-blue);
+  }
+  
+  .tab.active::before {
+    transform: scaleX(1);
+  }
+  
+  .tab.active {
+    text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+  }
+  
+  .back-button-container {
+    margin-bottom: 1.5rem;
+  }
+  
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-dark);
+    border-radius: 8px;
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    font-family: inherit;
+  }
+  
+  .back-button:hover {
+    border-color: var(--accent-blue);
+    background: var(--bg-hover);
+    text-decoration: none;
   }
   
   .header {
@@ -497,19 +665,17 @@
   }
   
   h1 {
-    font-family: 'Courier New', monospace;
+    font-family: var(--font-mono);
     font-size: 2.5rem;
-    color: #2C3E50;
+    color: var(--text-formula);
     margin-bottom: 1rem;
-    text-decoration: underline;
-    text-decoration-color: #4A5568;
-    text-decoration-thickness: 3px;
+    text-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
   }
   
   .intro {
-    font-family: 'Georgia', serif;
+    font-family: var(--font-sans);
     font-size: 1.125rem;
-    color: #2C3E50;
+    color: var(--text-secondary);
     line-height: 1.6;
     max-width: 700px;
     margin: 0 auto;
@@ -518,26 +684,65 @@
   .step-content {
     min-height: 500px;
     padding: 2rem;
-    background: rgba(255, 255, 255, 0.8);
-    border: 2px solid #95A5A6;
-    border-radius: 8px;
+    background: var(--bg-card);
+    background-image: var(--div-image-url, url('/div.jpg'));
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: overlay;
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-dark);
+    border-radius: 12px;
     margin-bottom: 2rem;
+    box-shadow: var(--shadow-lg);
+    overflow-x: auto;
+    position: relative;
+  }
+  
+  .step-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-card);
+    opacity: 0.8;
+    z-index: 0;
+    border-radius: 12px;
+  }
+  
+  .step-content > * {
+    position: relative;
+    z-index: 1;
+  }
+  
+  @media (max-width: 768px) {
+    .step-content {
+      padding: 1.5rem;
+      min-height: auto;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .step-content {
+      padding: 1rem;
+    }
   }
   
   .step h2 {
-    font-family: 'Courier New', monospace;
+    font-family: var(--font-mono);
     font-size: 1.75rem;
-    color: #4A5568;
+    color: var(--text-formula);
     margin-bottom: 1.5rem;
-    border-bottom: 2px solid #95A5A6;
+    border-bottom: 1px solid var(--border-medium);
     padding-bottom: 0.5rem;
   }
   
   .explanation {
-    font-family: 'Georgia', serif;
+    font-family: var(--font-sans);
     font-size: 1rem;
     line-height: 1.8;
-    color: #2C3E50;
+    color: var(--text-secondary);
     margin-bottom: 2rem;
   }
   
@@ -555,11 +760,12 @@
   }
   
   .security-note {
-    background: #fff3cd;
-    border-left: 4px solid #E74C3C;
+    background: rgba(239, 68, 68, 0.1);
+    border-left: 4px solid var(--error);
     padding: 1rem;
     margin: 1rem 0;
     font-size: 0.95rem;
+    color: var(--text-secondary);
   }
   
   .inputs-row {
@@ -569,26 +775,34 @@
     margin-bottom: 2rem;
   }
   
+  @media (max-width: 480px) {
+    .inputs-row {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+  
   .math-display {
-    background: rgba(74, 85, 104, 0.05);
+    background: rgba(255, 255, 255, 0.03);
     padding: 1.5rem;
     border-radius: 4px;
-    border: 1px dashed #4A5568;
+    border: 1px dashed var(--border-medium);
   }
   
   .calculation-box {
-    background: rgba(74, 85, 104, 0.05);
+    background: rgba(255, 255, 255, 0.03);
     padding: 2rem;
     border-radius: 8px;
-    border: 2px solid #4A5568;
+    border: 1px solid var(--border-medium);
     margin: 2rem 0;
   }
   
   .calc-step {
     margin: 1.5rem 0;
     padding: 1rem;
-    background: white;
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 4px;
+    border: 1px solid var(--border-dark);
   }
   
   .calc-step.animated {
@@ -598,37 +812,39 @@
   .calc-result {
     margin: 2rem 0;
     padding: 1.5rem;
-    background: #e8f5e9;
-    border: 3px solid #27AE60;
+    background: rgba(52, 211, 153, 0.1);
+    border: 2px solid var(--accent-green);
     border-radius: 8px;
     font-size: 1.5rem;
+    color: var(--text-formula);
   }
   
   .info-box {
-    background: #e3f2fd;
-    border-left: 4px solid #4A5568;
+    background: rgba(96, 165, 250, 0.1);
+    border-left: 4px solid var(--accent-blue);
     padding: 1.5rem;
     margin: 2rem 0;
     border-radius: 4px;
-    font-family: 'Georgia', serif;
+    font-family: var(--font-sans);
   }
   
   .info-box strong {
     display: block;
-    font-family: 'Courier New', monospace;
+    font-family: var(--font-mono);
     font-size: 1.1rem;
     margin-bottom: 0.5rem;
-    color: #2C3E50;
+    color: var(--text-formula);
   }
   
   .info-box p {
     margin: 0.5rem 0;
     line-height: 1.6;
+    color: var(--text-secondary);
   }
   
   .success-box {
-    background: #e8f5e9;
-    border: 3px solid #27AE60;
+    background: rgba(52, 211, 153, 0.15);
+    border: 2px solid var(--accent-green);
     padding: 2rem;
     border-radius: 8px;
     margin: 2rem 0;
@@ -636,36 +852,38 @@
   }
   
   .success-box h3 {
-    font-family: 'Courier New', monospace;
+    font-family: var(--font-mono);
     font-size: 2rem;
-    color: #27AE60;
+    color: var(--accent-green);
     margin-bottom: 1rem;
+    text-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
   }
   
   .success-box p {
-    font-family: 'Georgia', serif;
+    font-family: var(--font-sans);
     font-size: 1.1rem;
     line-height: 1.8;
     margin: 0.5rem 0;
+    color: var(--text-secondary);
   }
   
   .usage-tip {
-    background: #e3f2fd;
-    border-left: 4px solid #4A5568;
+    background: rgba(96, 165, 250, 0.1);
+    border-left: 4px solid var(--accent-blue);
     padding: 1.5rem;
     margin: 2rem 0 1rem 0;
     border-radius: 4px;
-    font-family: 'Georgia', serif;
+    font-family: var(--font-sans);
   }
   
   .usage-tip p {
     margin: 0.5rem 0;
     line-height: 1.6;
-    color: #2C3E50;
+    color: var(--text-secondary);
   }
   
   .usage-tip strong {
-    color: #4A5568;
+    color: var(--text-formula);
     font-weight: 600;
   }
   
@@ -674,15 +892,26 @@
     justify-content: center;
     gap: 1rem;
     margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  @media (max-width: 480px) {
+    .controls {
+      flex-direction: column;
+    }
+    
+    .btn {
+      width: 100%;
+    }
   }
   
   .btn {
     padding: 0.75rem 2rem;
     font-size: 1rem;
-    font-family: 'Courier New', monospace;
+    font-family: var(--font-mono);
     font-weight: 600;
-    border: 2px solid;
-    border-radius: 4px;
+    border: 1px solid;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
   }
@@ -693,40 +922,41 @@
   }
   
   .btn-primary {
-    background: #4A5568;
-    border-color: #4A5568;
-    color: white;
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: var(--bg-deep);
   }
   
   .btn-primary:hover:not(:disabled) {
-    background: #2C3E50;
-    border-color: #2C3E50;
+    background: var(--accent-cyan);
+    border-color: var(--accent-cyan);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(96, 165, 250, 0.4);
   }
   
   .btn-secondary {
-    background: white;
-    border-color: #95A5A6;
-    color: #2C3E50;
+    background: var(--bg-card);
+    border-color: var(--border-medium);
+    color: var(--text-primary);
   }
   
   .btn-secondary:hover:not(:disabled) {
-    background: #f8f9fa;
-    border-color: #4A5568;
+    background: var(--bg-hover);
+    border-color: var(--accent-blue);
   }
   
   .btn-success {
-    background: #27AE60;
-    border-color: #27AE60;
-    color: white;
+    background: var(--accent-green);
+    border-color: var(--accent-green);
+    color: var(--bg-deep);
   }
   
   .btn-success:hover {
-    background: #229954;
-    border-color: #229954;
+    background: var(--accent-green);
+    border-color: var(--accent-green);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+    box-shadow: 0 4px 12px rgba(52, 211, 153, 0.4);
+    filter: brightness(1.1);
   }
   
   .verification {

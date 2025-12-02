@@ -24,9 +24,9 @@
     />
   </label>
   {#if isValid === true}
-    <span class="validation-badge valid">✓ Valid</span>
+    <span class="validation-badge valid">Valid</span>
   {:else if isValid === false}
-    <span class="validation-badge invalid">✗ Invalid</span>
+    <span class="validation-badge invalid">Invalid</span>
   {/if}
 </div>
 
@@ -38,10 +38,10 @@
   
   .label-text {
     display: block;
-    font-family: 'Courier New', monospace;
+    font-family: var(--font-mono);
     font-size: 1rem;
     font-weight: 600;
-    color: #2C3E50;
+    color: var(--text-formula);
     margin-bottom: 0.5rem;
   }
   
@@ -49,33 +49,34 @@
     width: 100%;
     padding: 0.75rem 1rem;
     font-size: 1.125rem;
-    font-family: 'Courier New', monospace;
-    border: 2px solid #95A5A6;
-    background: #FFFFFF;
-    color: #1a1a1a;
-    border-radius: 4px;
+    font-family: var(--font-mono);
+    border: 1px solid var(--border-medium);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-radius: 8px;
     transition: all 0.3s ease;
   }
   
   input:focus {
     outline: none;
-    border-color: #4A5568;
-    box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.1);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
   }
   
   input.valid {
-    border-color: #27AE60;
-    background: #f0fdf4;
+    border-color: var(--accent-green);
+    background: rgba(52, 211, 153, 0.1);
   }
   
   input.invalid {
-    border-color: #E74C3C;
-    background: #fef2f2;
+    border-color: var(--error);
+    background: rgba(239, 68, 68, 0.1);
   }
   
   input:disabled {
-    background: #e5e5e5;
+    background: rgba(255, 255, 255, 0.05);
     cursor: not-allowed;
+    opacity: 0.5;
   }
   
   .validation-badge {
@@ -88,13 +89,13 @@
   }
   
   .validation-badge.valid {
-    background: #27AE60;
-    color: white;
+    background: var(--accent-green);
+    color: var(--bg-deep);
   }
   
   .validation-badge.invalid {
-    background: #E74C3C;
-    color: white;
+    background: var(--error);
+    color: var(--bg-deep);
   }
 </style>
 

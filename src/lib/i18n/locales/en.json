@@ -1,0 +1,100 @@
+{
+  "app": {
+    "name": "ShamirLab",
+    "tagline": "Interactive Cryptography Learning Platform",
+    "description": "Learn cryptography through interactive visualizations"
+  },
+  "nav": {
+    "home": "Home",
+    "concepts": "Concepts",
+    "about": "About",
+    "language": "Language"
+  },
+  "concepts": {
+    "rsa": {
+      "title": "RSA Encryption",
+      "description": "Asymmetric encryption algorithm",
+      "icon": "🔐"
+    },
+    "sha256": {
+      "title": "SHA-256 Hash",
+      "description": "Cryptographic hash function",
+      "icon": "🔑"
+    },
+    "ripemd": {
+      "title": "RIPEMD-160",
+      "description": "Hash function",
+      "icon": "🔒"
+    },
+    "nonce": {
+      "title": "NONCE",
+      "description": "Number used Once",
+      "icon": "🎲"
+    }
+  },
+  "rsa": {
+    "title": "RSA Encryption Visualized",
+    "intro": "RSA is a public-key cryptosystem widely used for secure data transmission. Let's explore how it works, step by step.",
+    "steps": {
+      "1": {
+        "title": "Step 1: Choose Prime Numbers",
+        "description": "RSA security relies on the difficulty of factoring large numbers. We start by choosing two different prime numbers, p and q.",
+        "security_note": "⚠️ In practice, these would be very large primes (hundreds of digits). We use small primes here for educational purposes."
+      },
+      "2": {
+        "title": "Step 2: Calculate n (Modulus)",
+        "description": "We multiply our two primes to get n, which is the modulus for both the public and private keys."
+      },
+      "3": {
+        "title": "Step 3: Calculate φ(n) - Euler's Totient",
+        "description": "Euler's totient function φ(n) counts how many numbers less than n are coprime to n (share no common factors except 1)."
+      },
+      "4": {
+        "title": "Step 4: Choose Public Exponent e",
+        "description": "The public exponent e must satisfy: 1 < e < φ(n) and gcd(e, φ(n)) = 1"
+      },
+      "5": {
+        "title": "Step 5: Calculate Private Exponent d",
+        "description": "The private exponent d is the modular multiplicative inverse of e modulo φ(n)."
+      },
+      "6": {
+        "title": "Step 6: Encrypt a Message",
+        "description": "To encrypt a message m, we calculate: c = m^e mod n"
+      },
+      "7": {
+        "title": "Step 7: Decrypt the Message",
+        "description": "To decrypt the ciphertext c, we use the private key: m = c^d mod n"
+      }
+    },
+    "controls": {
+      "previous": "← Previous Step",
+      "next": "Next Step →",
+      "reset": "Reset",
+      "start_over": "Start Over"
+    },
+    "labels": {
+      "prime_p": "Prime p",
+      "prime_q": "Prime q",
+      "public_exponent": "Public exponent e",
+      "message": "Message m (must be < n)"
+    },
+    "validation": {
+      "valid": "✓ Valid",
+      "invalid": "✗ Invalid"
+    }
+  },
+  "common": {
+    "why_important": "Why is this important?",
+    "common_choices": "Common choices:",
+    "the_ciphertext": "The Ciphertext",
+    "the_private_key": "The Private Key",
+    "public_key": "Public Key",
+    "private_key": "Private Key",
+    "success": "✓ Success!",
+    "want_to_try_again": "Want to try again?",
+    "click_start_over": "Click the \"Start Over\" button above to restart with different values.",
+    "coming_soon": "Coming soon!",
+    "select_concept": "Select a concept above to start learning"
+  }
+}
+
