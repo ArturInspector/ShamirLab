@@ -55,6 +55,8 @@
     color: var(--text-primary);
     border-radius: 8px;
     transition: all 0.3s ease;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
   }
   
   input:focus {

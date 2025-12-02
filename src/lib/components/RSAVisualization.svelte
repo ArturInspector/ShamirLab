@@ -665,11 +665,13 @@
   }
   
   h1 {
-    font-family: var(--font-mono);
+    font-family: var(--font-heading);
     font-size: 2.5rem;
+    font-weight: 700;
     color: var(--text-formula);
     margin-bottom: 1rem;
     text-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+    letter-spacing: -0.02em;
   }
   
   .intro {
@@ -907,13 +909,15 @@
   
   .btn {
     padding: 0.75rem 2rem;
-    font-size: 1rem;
-    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-family: var(--font-heading);
     font-weight: 600;
     border: 1px solid;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
   }
   
   .btn:disabled {

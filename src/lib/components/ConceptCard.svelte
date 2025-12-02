@@ -80,7 +80,8 @@
     font-weight: 600;
     color: var(--text-formula);
     margin: 0 0 0.5rem 0;
-    font-family: var(--font-sans);
+    font-family: var(--font-heading);
+    letter-spacing: -0.01em;
   }
   
   .description {

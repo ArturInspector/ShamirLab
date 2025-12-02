@@ -31,9 +31,10 @@
   --border-medium: rgba(255, 255, 255, 0.15);
   --border-light: rgba(255, 255, 255, 0.2);
   
-  /* Typography - system fonts only */
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: 'Courier New', 'Consolas', monospace;
+  /* Typography - Modern technical fonts */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+  --font-heading: 'Space Grotesk', 'Inter', system-ui, sans-serif;
   --font-math: 'Latin Modern Math', 'Cambria Math', serif;
   
   /* Base font size */
@@ -56,6 +57,10 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  /* Font features for better readability */
+  font-feature-settings: "kern" 1, "liga" 1;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Reset and base styles */

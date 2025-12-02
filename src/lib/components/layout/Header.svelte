@@ -32,11 +32,12 @@
   
   .logo {
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-formula);
     margin: 0;
-    font-family: var(--font-sans);
-    letter-spacing: 0.05em;
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
   }
   
   @media (max-width: 768px) {

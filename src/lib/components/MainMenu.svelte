@@ -187,10 +187,13 @@
     font-weight: 700;
     color: var(--text-formula);
     margin: 0 0 1rem 0;
-    font-family: var(--font-sans);
+    font-family: var(--font-heading);
     text-shadow: 0 0 30px rgba(96, 165, 250, 0.5);
     position: relative;
     z-index: 1;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    font-size: clamp(2rem, 5vw, 3.5rem);
   }
   
   .hero-description {
