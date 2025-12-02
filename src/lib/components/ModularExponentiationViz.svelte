@@ -1,4 +1,6 @@
 <script>
+  import MathNotation from './MathNotation.svelte';
+  
   export let base = 42;
   export let exponent = 5;
   export let modulus = 391;
