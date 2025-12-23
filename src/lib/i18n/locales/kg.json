@@ -205,6 +205,16 @@
     "check": "Текшер",
     "nextLevel": "Кийинки деңгээл"
   },
+  "rsaCity": {
+    "title": "RSA Crypto City",
+    "description": "Криптографиялык шаардын 3D визуализациясы",
+    "enterCity": "Шаарга кирүү",
+    "controls": {
+      "movement": "WASD - кыймыл",
+      "camera": "Чычкан - камераны буруу",
+      "exit": "ESC - чыгуу"
+    }
+  },
   "modules": {
     "title": "Үйрөнүү модулдары",
     "description": "Үйрөнүүнү баштоо үчүн модулду тандаңыз",

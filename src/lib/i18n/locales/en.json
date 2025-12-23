@@ -204,6 +204,16 @@
     "selectPair": "Select a pair",
     "check": "Check",
     "nextLevel": "Next Level"
+  },
+  "rsaCity": {
+    "title": "RSA Crypto City",
+    "description": "3D visualization of a cryptographic city",
+    "enterCity": "Enter the City",
+    "controls": {
+      "movement": "WASD - movement",
+      "camera": "Mouse - camera rotation",
+      "exit": "ESC - exit"
+    }
   }
 }
 

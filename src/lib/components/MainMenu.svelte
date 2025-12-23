@@ -107,6 +107,16 @@
     >
       Игра: Ключи
     </button>
+    <button 
+      class="practice-tab"
+      class:active={activeSection === 'rsa-city'}
+      on:click={() => {
+        activeSection = 'rsa-city';
+        window.location.hash = '#/rsa-city';
+      }}
+    >
+      RSA Crypto City
+    </button>
   </div>
   
   {#if activeSection === 'concepts'}
@@ -150,6 +160,14 @@
   {:else if activeSection === 'key-game'}
     <div class="practice-section">
       <KeyPairGame />
+    </div>
+  {:else if activeSection === 'rsa-city'}
+    <div class="practice-section">
+      <div class="rsa-city-preview">
+        <h2>🏙️ {$tStore('rsaCity.title')}</h2>
+        <p>{$tStore('rsaCity.description')}</p>
+        <a href="#/rsa-city" class="enter-city-btn">{$tStore('rsaCity.enterCity')}</a>
+      </div>
     </div>
   {/if}
 </div>
@@ -384,5 +402,47 @@
     .hero-description {
       font-size: 0.9rem;
     }
+  }
+  
+  .rsa-city-preview {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    border: 1px solid var(--border-dark);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .rsa-city-preview h2 {
+    font-size: 2.5rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-family: var(--font-heading);
+  }
+  
+  .rsa-city-preview p {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+  }
+  
+  .enter-city-btn {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background: var(--accent-blue);
+    color: var(--bg-deep);
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
+  }
+  
+  .enter-city-btn:hover {
+    background: var(--accent-cyan);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
   }
 </style>

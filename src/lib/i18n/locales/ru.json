@@ -205,6 +205,16 @@
     "check": "Проверить",
     "nextLevel": "Следующий уровень"
   },
+  "rsaCity": {
+    "title": "RSA Crypto City",
+    "description": "3D визуализация криптографического города",
+    "enterCity": "Войти в город",
+    "controls": {
+      "movement": "WASD - движение",
+      "camera": "Мышь - поворот камеры",
+      "exit": "ESC - выход"
+    }
+  },
   "modules": {
     "title": "Модули обучения",
     "description": "Выберите модуль для начала изучения",

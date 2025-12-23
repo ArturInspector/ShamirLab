@@ -5,6 +5,7 @@
   import RSAVisualization from './lib/components/RSAVisualization.svelte';
   import FAQ from './lib/components/FAQ.svelte';
   import KeyPairGame from './lib/components/KeyPairGame.svelte';
+  import RSACity from './lib/components/RSACity/RSACity.svelte';
   
   let currentRoute = 'home';
   
@@ -36,6 +37,7 @@
   class:sha256-page={currentRoute === 'sha256'}
   class:ripemd-page={currentRoute === 'ripemd'}
   class:nonce-page={currentRoute === 'nonce'}
+  class:rsa-city-page={currentRoute === 'rsa-city'}
 >
   {#if currentRoute === 'home' || currentRoute === ''}
     <MainMenu />
@@ -47,6 +49,8 @@
     <FAQ type="web3" />
   {:else if currentRoute === 'key-game'}
     <KeyPairGame />
+  {:else if currentRoute === 'rsa-city'}
+    <RSACity />
   {:else}
     <div class="not-found">
       <h2>404 - Not Found</h2>
@@ -98,6 +102,10 @@
   main.nonce-page::before {
     background-image: url('/background5.jpg');
     opacity: 0.5;
+  }
+  
+  main.rsa-city-page::before {
+    opacity: 0;
   }
   
   main::after {
