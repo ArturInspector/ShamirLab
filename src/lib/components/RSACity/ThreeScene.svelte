@@ -4,6 +4,8 @@
   import { setupLighting, setupCamera, createGround } from '../../utils/three-helpers.js';
   import { cityConfig } from '../../utils/city-config.js';
   import { PlayerController } from './PlayerController.js';
+  import { RSATower } from './RSATower.js';
+  import { Building } from './Building.js';
   
   let container;
   let scene, camera, renderer;
@@ -17,6 +19,16 @@
     objectsCount: 0
   };
   let showDebug = true;
+  
+  // Интерактивность
+  let raycaster = null;
+  let mouse = new THREE.Vector2(0, 0);
+  let hoveredObject = null;
+  let selectedBuilding = null;
+  let rsaTower = null;
+  let buildings = [];
+  let showBuildingInfo = false;
+  let buildingInfo = { name: '', description: '' };
   
   onMount(() => {
     if (!container) return;
@@ -86,76 +98,108 @@
     scene.add(gridHelper);
     console.log(`✅ Земля создана: размер ${cityConfig.size}x${cityConfig.size}`);
     
-    // Создание тестовых зданий
-    console.log('🏗️ Создание тестовых зданий...');
+    // Инициализация raycasting для интерактивности
+    // @ts-ignore - Raycaster constructor is fine
+    raycaster = new THREE.Raycaster();
+    console.log('✅ Raycaster инициализирован');
     
-    // Тестовое здание 1: Простой куб в центре
-    const building1Geometry = new THREE.BoxGeometry(5, 10, 5);
-    const building1Material = new THREE.MeshStandardMaterial({ 
-      color: 0x4a90e2,
-      emissive: 0x1a3a5a,
-      emissiveIntensity: 0.2
+    // Создание RSA Tower
+    console.log('🏗️ Создание RSA Tower...');
+    rsaTower = new RSATower({
+      position: new THREE.Vector3(0, 0, 0),
+      onFloorClick: (floorNumber, floorData) => {
+        console.log(`🏢 Клик на этаж ${floorNumber}: ${floorData.floorName}`);
+        buildingInfo = {
+          name: `Этаж ${floorNumber}: ${floorData.floorName}`,
+          description: `Этап ${floorNumber} процесса RSA шифрования`,
+          floorNumber: floorNumber
+        };
+        showBuildingInfo = true;
+        
+        // Переход к соответствующему этапу RSA
+        setTimeout(() => {
+          window.location.hash = `#/rsa`;
+          // Можно добавить логику для установки currentStep в RSAVisualization
+        }, 500);
+      }
     });
-    const building1 = new THREE.Mesh(building1Geometry, building1Material);
-    // @ts-ignore - Mesh has position property
-    building1.position.set(0, 5, 0); // Центр, высота 5 (половина высоты здания)
-    building1.castShadow = true;
-    building1.receiveShadow = true;
+    scene.add(rsaTower.getGroup());
+    console.log('✅ RSA Tower создана в центре');
+    
+    // Создание других зданий
+    console.log('🏗️ Создание других зданий...');
+    
+    // Hash Factory
+    const hashFactory = new Building({
+      id: 'hash-factory',
+      name: 'Hash Factory',
+      position: new THREE.Vector3(30, 0, 30),
+      size: { width: 6, height: 12, depth: 6 },
+      color: 0xe24a4a,
+      hoverColor: 0xff6b6b,
+      metadata: { type: 'hash', route: '#/sha256' },
+      onEnter: (building) => {
+        console.log(`🚪 Вход в ${building.name}`);
+        window.location.hash = building.metadata.route;
+      }
+    });
     // @ts-ignore - Mesh is Object3D
-    scene.add(building1);
-    console.log('✅ Здание 1 создано в центре (0, 5, 0)');
+    scene.add(hashFactory.mesh);
+    buildings.push(hashFactory);
     
-    // Тестовое здание 2: Справа
-    const building2 = new THREE.Mesh(
-      new THREE.BoxGeometry(4, 8, 4),
-      new THREE.MeshStandardMaterial({ color: 0xe24a4a })
-    );
+    // Game Arena
+    const gameArena = new Building({
+      id: 'game-arena',
+      name: 'Game Arena',
+      position: new THREE.Vector3(-30, 0, 30),
+      size: { width: 7, height: 10, depth: 7 },
+      color: 0x4ae24a,
+      hoverColor: 0x6bff6b,
+      metadata: { type: 'game', route: '#/key-game' },
+      onEnter: (building) => {
+        window.location.hash = building.metadata.route;
+      }
+    });
     // @ts-ignore
-    building2.position.set(15, 4, 0);
-    building2.castShadow = true;
-    building2.receiveShadow = true;
-    // @ts-ignore
-    scene.add(building2);
-    console.log('✅ Здание 2 создано справа (15, 4, 0)');
+    scene.add(gameArena.mesh);
+    buildings.push(gameArena);
     
-    // Тестовое здание 3: Слева
-    const building3 = new THREE.Mesh(
-      new THREE.BoxGeometry(6, 12, 6),
-      new THREE.MeshStandardMaterial({ color: 0x4ae24a })
-    );
+    // Library
+    const library = new Building({
+      id: 'library',
+      name: 'Library',
+      position: new THREE.Vector3(30, 0, -30),
+      size: { width: 8, height: 14, depth: 8 },
+      color: 0xe2e24a,
+      hoverColor: 0xffff6b,
+      metadata: { type: 'library', route: '#/faq-crypto' },
+      onEnter: (building) => {
+        window.location.hash = building.metadata.route;
+      }
+    });
     // @ts-ignore
-    building3.position.set(-15, 6, 0);
-    building3.castShadow = true;
-    building3.receiveShadow = true;
-    // @ts-ignore
-    scene.add(building3);
-    console.log('✅ Здание 3 создано слева (-15, 6, 0)');
+    scene.add(library.mesh);
+    buildings.push(library);
     
-    // Тестовое здание 4: Впереди
-    const building4 = new THREE.Mesh(
-      new THREE.BoxGeometry(5, 15, 5),
-      new THREE.MeshStandardMaterial({ color: 0xe2e24a })
-    );
+    // Alice & Bob Building
+    const aliceBob = new Building({
+      id: 'alice-bob',
+      name: 'Alice & Bob',
+      position: new THREE.Vector3(-30, 0, -30),
+      size: { width: 6, height: 11, depth: 6 },
+      color: 0xe24ae2,
+      hoverColor: 0xff6bff,
+      metadata: { type: 'alice-bob' },
+      onEnter: (building) => {
+        // Можно добавить специальную логику для Alice & Bob
+        console.log('Вход в Alice & Bob Building');
+      }
+    });
     // @ts-ignore
-    building4.position.set(0, 7.5, -15);
-    building4.castShadow = true;
-    building4.receiveShadow = true;
-    // @ts-ignore
-    scene.add(building4);
-    console.log('✅ Здание 4 создано впереди (0, 7.5, -15)');
+    scene.add(aliceBob.mesh);
+    buildings.push(aliceBob);
     
-    // Тестовое здание 5: Сзади
-    const building5 = new THREE.Mesh(
-      new THREE.BoxGeometry(4, 9, 4),
-      new THREE.MeshStandardMaterial({ color: 0xe24ae2 })
-    );
-    // @ts-ignore
-    building5.position.set(0, 4.5, 15);
-    building5.castShadow = true;
-    building5.receiveShadow = true;
-    // @ts-ignore
-    scene.add(building5);
-    console.log('✅ Здание 5 создано сзади (0, 4.5, 15)');
+    console.log(`✅ Создано ${buildings.length} зданий`);
     
     console.log(`📊 Всего объектов в сцене: ${scene.children.length}`);
     console.log('📋 Детали сцены:', {
@@ -167,6 +211,89 @@
     // Создание контроллера игрока
     playerController = new PlayerController(camera, scene);
     console.log('✅ PlayerController создан');
+    
+    // Обработка мыши для raycasting
+    const handleMouseMove = (event) => {
+      if (!container || !camera || !renderer) return;
+      
+      // Нормализуем координаты мыши (-1 до +1)
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    };
+    
+    const handleClick = (event) => {
+      if (!raycaster || !camera || !scene) return;
+      
+      // Обновляем raycasting
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(scene.children, true);
+      
+      if (intersects.length > 0) {
+        const intersected = intersects[0].object;
+        
+        // Проверяем, это этаж башни?
+        if (intersected.userData.isFloor) {
+          const floorNumber = intersected.userData.floorNumber;
+          rsaTower.activateFloor(floorNumber);
+          return;
+        }
+        
+        // Проверяем, это здание?
+        if (intersected.userData.building) {
+          const building = intersected.userData.building;
+          building.enter();
+          return;
+        }
+      }
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('click', handleClick);
+    
+    // Проверка близости к зданиям для автоматического входа
+    const checkBuildingProximity = () => {
+      if (!playerController || buildings.length === 0) return;
+      
+      const playerPos = playerController.position;
+      const triggerDistance = 5; // Расстояние для автоматического входа
+      
+      for (const building of buildings) {
+        const zone = building.getTriggerZone();
+        const distance = playerPos.distanceTo(zone.center);
+        
+        if (distance < triggerDistance) {
+          // Показываем подсказку о входе
+          if (!showBuildingInfo || buildingInfo.name !== building.name) {
+            buildingInfo = {
+              name: building.name,
+              description: `Нажмите E для входа`,
+              building: building
+            };
+            showBuildingInfo = true;
+          }
+        } else {
+          if (showBuildingInfo && buildingInfo.building === building) {
+            showBuildingInfo = false;
+          }
+        }
+      }
+    };
+    
+    // Обработка клавиши E для входа
+    const handleKeyPress = (event) => {
+      if (event.code === 'KeyE' && showBuildingInfo && buildingInfo.building) {
+        buildingInfo.building.enter();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyPress);
+    
+    // Сохраняем обработчики для очистки
+    const cleanupHandlers = () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('click', handleClick);
+      window.removeEventListener('keydown', handleKeyPress);
+    };
     
     // Обработка изменения размера окна
     const handleResize = () => {
@@ -206,6 +333,68 @@
         };
         debugInfo.objectsCount = scene.children.length;
         
+        // Raycasting для определения наведения на объекты
+        if (raycaster && camera) {
+          raycaster.setFromCamera(mouse, camera);
+          const intersects = raycaster.intersectObjects(scene.children, true);
+          
+          // Сбрасываем предыдущее наведение
+          if (hoveredObject) {
+            if (hoveredObject.userData.isFloor && rsaTower) {
+              rsaTower.setFloorHovered(hoveredObject.userData.floorNumber, false);
+            } else if (hoveredObject.userData.building) {
+              hoveredObject.userData.building.setHovered(false);
+            }
+            hoveredObject = null;
+          }
+          
+          // Проверяем новое наведение
+          if (intersects.length > 0) {
+            const intersected = intersects[0].object;
+            
+            if (intersected.userData.isFloor && rsaTower) {
+              const floorNumber = intersected.userData.floorNumber;
+              rsaTower.setFloorHovered(floorNumber, true);
+              hoveredObject = intersected;
+            } else if (intersected.userData.building) {
+              intersected.userData.building.setHovered(true);
+              hoveredObject = intersected;
+            }
+          }
+        }
+        
+        // Проверка близости к зданиям
+        if (buildings.length > 0) {
+          const playerPos = playerController.position;
+          const triggerDistance = 5;
+          
+          let nearBuilding = null;
+          for (const building of buildings) {
+            const zone = building.getTriggerZone();
+            const distance = playerPos.distanceTo(zone.center);
+            
+            if (distance < triggerDistance) {
+              nearBuilding = building;
+              break;
+            }
+          }
+          
+          if (nearBuilding) {
+            if (!showBuildingInfo || buildingInfo.building !== nearBuilding) {
+              buildingInfo = {
+                name: nearBuilding.name,
+                description: 'Нажмите E для входа',
+                building: nearBuilding
+              };
+              showBuildingInfo = true;
+            }
+          } else {
+            if (showBuildingInfo && buildingInfo.building) {
+              showBuildingInfo = false;
+            }
+          }
+        }
+        
         // Логирование позиции каждые 2 секунды (для отладки)
         if (Math.floor(currentTime / 2000) !== Math.floor((currentTime - deltaTime * 1000) / 2000)) {
           const pos = playerController.position;
@@ -229,6 +418,7 @@
     
     return () => {
       window.removeEventListener('resize', handleResize);
+      cleanupHandlers();
     };
   });
   
@@ -239,6 +429,14 @@
     
     if (playerController) {
       playerController.dispose();
+    }
+    
+    // Очистка зданий
+    buildings.forEach(building => building.dispose());
+    buildings = [];
+    
+    if (rsaTower) {
+      rsaTower.dispose();
     }
     
     if (renderer) {
@@ -297,6 +495,19 @@
     </div>
   {:else}
     <button class="debug-toggle-btn" on:click={() => showDebug = true}>🔧 Debug</button>
+  {/if}
+  
+  {#if showBuildingInfo}
+    <div class="building-info">
+      <div class="building-info-content">
+        <h3>{buildingInfo.name}</h3>
+        <p>{buildingInfo.description}</p>
+        {#if buildingInfo.building}
+          <div class="building-hint">Нажмите <kbd>E</kbd> для входа</div>
+        {/if}
+        <button class="close-info" on:click={() => showBuildingInfo = false}>×</button>
+      </div>
+    </div>
   {/if}
 </div>
 
@@ -425,6 +636,90 @@
   
   .debug-toggle-btn:hover {
     background: rgba(0, 255, 0, 0.2);
+  }
+  
+  .building-info {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+    animation: slideUp 0.3s ease;
+  }
+  
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+  
+  .building-info-content {
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 12px;
+    border: 2px solid var(--accent-blue, #4a90e2);
+    min-width: 300px;
+    max-width: 500px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+  }
+  
+  .building-info-content h3 {
+    margin: 0 0 10px 0;
+    color: var(--accent-blue, #4a90e2);
+    font-size: 1.3rem;
+  }
+  
+  .building-info-content p {
+    margin: 0 0 10px 0;
+    color: #ccc;
+    font-size: 0.95rem;
+  }
+  
+  .building-hint {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: rgba(74, 144, 226, 0.2);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #4a90e2;
+  }
+  
+  .building-hint kbd {
+    background: rgba(74, 144, 226, 0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-weight: bold;
+  }
+  
+  .close-info {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: 1px solid #666;
+    color: #ccc;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    padding: 0;
+    transition: all 0.2s;
+  }
+  
+  .close-info:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #999;
   }
 </style>
 

@@ -18,6 +18,13 @@ export class PlayerController {
     this.rotationSpeed = 0.002;
     this.mouseSensitivity = 0.002;
     
+    // Параметры прыжка
+    this.jumpHeight = 5.0;
+    this.gravity = -15.0;
+    this.verticalVelocity = 0;
+    this.isGrounded = true;
+    this.groundY = 2.0; // Высота земли
+    
     // Состояние клавиатуры
     this.keys = {};
     this.mouse = { x: 0, y: 0, isLocked: false };
@@ -91,12 +98,24 @@ export class PlayerController {
       if (e.code === 'Escape') {
         document.exitPointerLock();
       }
+      
+      // Прыжок на Space
+      if (e.code === 'Space' && this.isGrounded) {
+        this.jump();
+      }
     });
   }
   
   lockPointer() {
     const canvas = this.camera.parent || document.body;
     canvas.requestPointerLock();
+  }
+  
+  jump() {
+    if (this.isGrounded) {
+      this.verticalVelocity = this.jumpHeight;
+      this.isGrounded = false;
+    }
   }
   
   update(deltaTime) {
@@ -134,6 +153,19 @@ export class PlayerController {
       // Плавное торможение
       this.velocity.x *= 0.8;
       this.velocity.z *= 0.8;
+    }
+    
+    // Физика прыжка
+    this.verticalVelocity += this.gravity * deltaTime;
+    this.position.y += this.verticalVelocity * deltaTime;
+    
+    // Проверка приземления
+    if (this.position.y <= this.groundY) {
+      this.position.y = this.groundY;
+      this.verticalVelocity = 0;
+      this.isGrounded = true;
+    } else {
+      this.isGrounded = false;
     }
     
     // Обновляем позицию

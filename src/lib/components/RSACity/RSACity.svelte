@@ -1,9 +1,9 @@
 <script>
-  import ThreeScene from './ThreeScene.svelte';
+  import DefenseScene from './DefenseScene.svelte';
 </script>
 
 <div class="rsa-city">
-  <ThreeScene />
+  <DefenseScene />
 </div>
 
 <style>
