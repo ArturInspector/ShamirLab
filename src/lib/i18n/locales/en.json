@@ -95,6 +95,115 @@
     "click_start_over": "Click the \"Start Over\" button above to restart with different values.",
     "coming_soon": "Coming soon!",
     "select_concept": "Select a concept above to start learning"
+  },
+  "faq": {
+    "crypto": {
+      "title": "FAQ: Crypto Basics",
+      "subtitle": "Everything you wanted to know but were afraid to ask (or Google)",
+      "items": [
+        {
+          "q": "What is cryptography anyway?",
+          "a": "It's like a secret language, but for computers. Imagine writing a note to a friend that only they can read. Cryptography does the same thing, but with zeros and ones. 🔐"
+        },
+        {
+          "q": "Why should I care?",
+          "a": "Well, if you want to understand how the internet, banks, messengers, and basically everything related to security works - then yes, it's useful. Plus it sounds cool at parties: 'I understand cryptography' 😎"
+        },
+        {
+          "q": "Is RSA complicated?",
+          "a": "At first it seems like some magic with prime numbers. But actually it's just multiplication, division, and a bit of math. We've broken it down step by step here, so don't panic! 🧮"
+        },
+        {
+          "q": "Public and private keys - what's the difference?",
+          "a": "Public key is like your mailbox address. Everyone can put something in (encrypt), but only you with the private key can open (decrypt) it. Simple and elegant! 📬"
+        },
+        {
+          "q": "Can RSA be hacked?",
+          "a": "Theoretically - yes. Practically - if you have a quantum computer the size of a planet and billions of years. For regular mortals, it's like guessing a password with a million characters. Almost impossible! 🚀"
+        },
+        {
+          "q": "Where is this used?",
+          "a": "Everywhere! HTTPS (the lock in your browser), bank cards, messengers, blockchain. If you see 'https://' - cryptography is working there. You're literally surrounded by it! 🌐"
+        },
+        {
+          "q": "Do I need to be a mathematician?",
+          "a": "No! Basic arithmetic is enough. We explain all complex formulas in simple terms. If you can multiply numbers - you're halfway there! ✨"
+        },
+        {
+          "q": "Where do I start?",
+          "a": "Start with our RSA visualizer! Play with prime numbers, see how everything works. Then you can move to other algorithms. The main thing - don't be afraid to experiment! 🎮"
+        }
+      ]
+    },
+    "web3": {
+      "title": "FAQ: Web3 Basics",
+      "subtitle": "Blockchain, crypto and all that - without the boring terms",
+      "items": [
+        {
+          "q": "What is Web3 anyway?",
+          "a": "It's like the internet, but without big uncles (Google, Facebook) controlling everything. Instead - blockchain and cryptography. You own your data! 🎯"
+        },
+        {
+          "q": "Is blockchain complicated?",
+          "a": "Imagine a chain of blocks (makes sense, right?). Each block contains information and is linked to the previous one. Changing something in an old block - almost impossible. It's like a book that can't be forged! 📚"
+        },
+        {
+          "q": "What is cryptocurrency?",
+          "a": "Digital money that works on blockchain. Bitcoin, Ether and tons of others. Main difference - no central bank, everything works through a network of computers. 💰"
+        },
+        {
+          "q": "Why do I need private keys?",
+          "a": "It's like the password to your crypto wallet. Only yours. Lost it - goodbye money. Showed it to someone - also goodbye. Keep it like the apple of your eye! 🔑"
+        },
+        {
+          "q": "What is mining?",
+          "a": "When computers solve complex math problems to add a new block to the chain. They get cryptocurrency for it. Like gold mining, but digital! ⛏️"
+        },
+        {
+          "q": "NFTs - is that about art?",
+          "a": "Not only! NFT (Non-Fungible Token) is a unique token on blockchain. Can be a picture, music, domain name, anything. Main thing - it's unique and belongs to you. 🎨"
+        },
+        {
+          "q": "DeFi - decode that!",
+          "a": "Decentralized Finance - finance without banks. You can lend, borrow, trade - all through smart contracts. Banks not needed! 🏦❌"
+        },
+        {
+          "q": "Smart contract - what's that?",
+          "a": "A program on blockchain that executes conditions automatically. For example: 'If Alice transfers money, Bob gets access to the file'. No one can cheat! 🤖"
+        },
+        {
+          "q": "Is this safe?",
+          "a": "Cryptography makes it very safe. But there are nuances: scammers, phishing, lost keys. Be careful, don't trust suspicious sites and keep keys securely! 🛡️"
+        },
+        {
+          "q": "Where do I start in Web3?",
+          "a": "1) Create a wallet (MetaMask, for example) 2) Learn basic concepts (blockchain, keys) 3) Start small - try a test network 4) Don't invest more than you're ready to lose! 🎓"
+        }
+      ]
+    }
+  },
+  "keyGame": {
+    "title": "Game: Find the Key Pair!",
+    "subtitle": "Match public keys with their private friends",
+    "instructions": "How to play:",
+    "instructionsStep1": "1. Select one public key (top) - click on a card",
+    "instructionsStep2": "2. Select one private key (bottom) - click on a card",
+    "instructionsStep3": "3. If they match - pair found! If not - try another combination",
+    "instructionsStep4": "4. Find all pairs to win!",
+    "instructionsNote": "Hint: Public key (e, n) and private key (d, n) are connected through the same prime numbers. The correct pair has the same n value!",
+    "newGame": "New Game",
+    "score": "Score",
+    "matches": "Matches Found",
+    "time": "Time",
+    "correct": "Correct!",
+    "wrong": "Wrong! Try again",
+    "win": "Victory! You're a key master!",
+    "hint": "Hint: public key = (e, n), private = (d, n). They're connected through prime numbers!",
+    "publicKey": "Public Key",
+    "privateKey": "Private Key",
+    "selectPair": "Select a pair",
+    "check": "Check",
+    "nextLevel": "Next Level"
   }
 }
 

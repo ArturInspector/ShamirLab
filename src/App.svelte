@@ -3,6 +3,8 @@
   import Header from './lib/components/layout/Header.svelte';
   import MainMenu from './lib/components/MainMenu.svelte';
   import RSAVisualization from './lib/components/RSAVisualization.svelte';
+  import FAQ from './lib/components/FAQ.svelte';
+  import KeyPairGame from './lib/components/KeyPairGame.svelte';
   
   let currentRoute = 'home';
   
@@ -39,6 +41,12 @@
     <MainMenu />
   {:else if currentRoute === 'rsa'}
     <RSAVisualization />
+  {:else if currentRoute === 'faq-crypto'}
+    <FAQ type="crypto" />
+  {:else if currentRoute === 'faq-web3'}
+    <FAQ type="web3" />
+  {:else if currentRoute === 'key-game'}
+    <KeyPairGame />
   {:else}
     <div class="not-found">
       <h2>404 - Not Found</h2>

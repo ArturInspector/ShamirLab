@@ -3,9 +3,11 @@
   import AliceAndBob from './AliceAndBob.svelte';
   import FactorizationVisualization from './FactorizationVisualization.svelte';
   import PracticeMode from './PracticeMode.svelte';
+  import FAQ from './FAQ.svelte';
+  import KeyPairGame from './KeyPairGame.svelte';
   import { tStore } from '../i18n/store.js';
   
-  let activeSection = 'concepts'; // 'concepts', 'alice-bob', 'factorize', 'practice'
+  let activeSection = 'concepts'; // 'concepts', 'alice-bob', 'factorize', 'practice', 'faq-crypto', 'faq-web3', 'key-game'
   
   // Reactive concepts that update when language changes
   $: concepts = [
@@ -84,6 +86,27 @@
     >
       Практика
     </button>
+    <button 
+      class="practice-tab"
+      class:active={activeSection === 'faq-crypto'}
+      on:click={() => activeSection = 'faq-crypto'}
+    >
+      FAQ: Крипта 
+    </button>
+    <button 
+      class="practice-tab"
+      class:active={activeSection === 'faq-web3'}
+      on:click={() => activeSection = 'faq-web3'}
+    >
+      FAQ: Web3
+    </button>
+    <button 
+      class="practice-tab"
+      class:active={activeSection === 'key-game'}
+      on:click={() => activeSection = 'key-game'}
+    >
+      Игра: Ключи
+    </button>
   </div>
   
   {#if activeSection === 'concepts'}
@@ -115,6 +138,18 @@
   {:else if activeSection === 'practice'}
     <div class="practice-section">
       <PracticeMode />
+    </div>
+  {:else if activeSection === 'faq-crypto'}
+    <div class="practice-section">
+      <FAQ type="crypto" />
+    </div>
+  {:else if activeSection === 'faq-web3'}
+    <div class="practice-section">
+      <FAQ type="web3" />
+    </div>
+  {:else if activeSection === 'key-game'}
+    <div class="practice-section">
+      <KeyPairGame />
     </div>
   {/if}
 </div>
