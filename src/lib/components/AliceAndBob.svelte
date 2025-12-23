@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import MathNotation from './MathNotation.svelte';
   import { RSAKeyGenerator, rsaEncrypt, rsaDecrypt } from '../algorithms/rsa.js';
+  import { tStore } from '../i18n/store.js';
   
   let step = 1;
   let aliceP = 17;
@@ -14,6 +15,7 @@
   let message = '';
   let encryptedMessage = null;
   let decryptedMessage = null;
+  let encryptionError = null;
   
   let animating = false;
   
@@ -55,12 +57,26 @@
       step = 3;
     } else if (step === 3 && message) {
       // Alice encrypts message with Bob's public key
-      encryptedMessage = rsaEncrypt(parseInt(message), bobKeys.public);
-      step = 4;
+      const messageNum = parseInt(message);
+      if (isNaN(messageNum)) {
+        encryptionError = $tStore('aliceBob.error.invalidMessage');
+        return;
+      }
+      const result = rsaEncrypt(messageNum, bobKeys.public);
+      if (result.valid) {
+        encryptedMessage = result;
+        encryptionError = null;
+        step = 4;
+      } else {
+        encryptionError = $tStore('aliceBob.error.encryptionFailed').replace('{reason}', result.reason || 'Unknown error');
+        encryptedMessage = null;
+      }
     } else if (step === 4) {
       // Bob decrypts with his private key
-      decryptedMessage = rsaDecrypt(encryptedMessage.ciphertext, bobKeys.private);
-      step = 5;
+      if (encryptedMessage && encryptedMessage.valid) {
+        decryptedMessage = rsaDecrypt(encryptedMessage.ciphertext, bobKeys.private);
+        step = 5;
+      }
     }
   }
   
@@ -71,20 +87,21 @@
     bobKeys = null;
     encryptedMessage = null;
     decryptedMessage = null;
+    encryptionError = null;
   }
 </script>
 
 <div class="alice-bob">
-  <h2>Алиса и Боб: Реальный сценарий</h2>
+  <h2>{$tStore('aliceBob.title')}</h2>
   
   <div class="characters">
     <div class="character alice" class:active={step >= 1}>
       <div class="avatar">A</div>
-      <div class="name">Алиса</div>
+      <div class="name">{$tStore('aliceBob.alice')}</div>
       {#if aliceKeys}
         <div class="keys">
-          <div class="key public">Публичный: (e={aliceKeys.public.e}, n={aliceKeys.public.n})</div>
-          <div class="key private">Приватный: (d={aliceKeys.private.d}, n={aliceKeys.private.n})</div>
+          <div class="key public">{$tStore('aliceBob.publicKey')}: (e={aliceKeys.public.e}, n={aliceKeys.public.n})</div>
+          <div class="key private">{$tStore('aliceBob.privateKey')}: (d={aliceKeys.private.d}, n={aliceKeys.private.n})</div>
         </div>
       {/if}
     </div>
@@ -93,11 +110,11 @@
     
     <div class="character bob" class:active={step >= 2}>
       <div class="avatar">B</div>
-      <div class="name">Боб</div>
+      <div class="name">{$tStore('aliceBob.bob')}</div>
       {#if bobKeys}
         <div class="keys">
-          <div class="key public">Публичный: (e={bobKeys.public.e}, n={bobKeys.public.n})</div>
-          <div class="key private"> Приватный: (d={bobKeys.private.d}, n={bobKeys.private.n})</div>
+          <div class="key public">{$tStore('aliceBob.publicKey')}: (e={bobKeys.public.e}, n={bobKeys.public.n})</div>
+          <div class="key private">{$tStore('aliceBob.privateKey')}: (d={bobKeys.private.d}, n={bobKeys.private.n})</div>
         </div>
       {/if}
     </div>
@@ -106,80 +123,83 @@
   <div class="scenario">
     {#if step === 1}
       <div class="step-box">
-        <h3>Шаг 1: Алиса генерирует ключи</h3>
-        <p>Алиса выбирает простые числа p={aliceP} и q={aliceQ}</p>
-        <button class="action-btn" on:click={nextStep}>Сгенерировать ключи Алисы</button>
+        <h3>{$tStore('aliceBob.step1.title')}</h3>
+        <p>{$tStore('aliceBob.step1.description').replace('{p}', aliceP).replace('{q}', aliceQ)}</p>
+        <button class="action-btn" on:click={nextStep}>{$tStore('aliceBob.step1.button')}</button>
       </div>
     {:else if step === 2}
       <div class="step-box">
-        <h3>Шаг 2: Боб генерирует ключи</h3>
-        <p>Боб выбирает простые числа p={bobP} и q={bobQ}</p>
-        <button class="action-btn" on:click={nextStep}>Сгенерировать ключи Боба</button>
+        <h3>{$tStore('aliceBob.step2.title')}</h3>
+        <p>{$tStore('aliceBob.step2.description').replace('{p}', bobP).replace('{q}', bobQ)}</p>
+        <button class="action-btn" on:click={nextStep}>{$tStore('aliceBob.step2.button')}</button>
       </div>
     {:else if step === 3}
       <div class="step-box">
-        <h3>Шаг 3: Алиса шифрует сообщение</h3>
-        <p>Алиса хочет отправить Бобу секретное сообщение</p>
+        <h3>{$tStore('aliceBob.step3.title')}</h3>
+        <p>{$tStore('aliceBob.step3.description')}</p>
         <div class="input-group">
           <input 
             type="text" 
             bind:value={message} 
-            placeholder="Введите сообщение (число)"
+            placeholder={$tStore('aliceBob.step3.placeholder')}
             class="message-input"
           />
           <button class="action-btn" on:click={nextStep} disabled={!message}>
-            Зашифровать сообщение
+            {$tStore('aliceBob.step3.button')}
           </button>
         </div>
-        <p class="hint">Алиса использует публичный ключ Боба для шифрования</p>
+        {#if encryptionError}
+          <p class="error-message">{encryptionError}</p>
+        {/if}
+        <p class="hint">{$tStore('aliceBob.step3.hint')}</p>
       </div>
     {:else if step === 4}
       <div class="step-box">
-        <h3>Шаг 4: Сообщение передается</h3>
+        <h3>{$tStore('aliceBob.step4.title')}</h3>
         <div class="message-flow">
           <div class="message-box original">
-            <strong>Исходное:</strong> {message}
+            <strong>{$tStore('aliceBob.step4.original')}:</strong> {message}
           </div>
           <div class="arrow-large">↓</div>
           <div class="message-box encrypted">
-            <strong>Зашифровано:</strong> {encryptedMessage?.ciphertext}
+            <strong>{$tStore('aliceBob.step4.encrypted')}:</strong> {encryptedMessage?.ciphertext ?? ''}
           </div>
-          <p class="security-note">Сообщение передается через небезопасный канал</p>
+          <p class="security-note">{$tStore('aliceBob.step4.securityNote')}</p>
         </div>
-        <button class="action-btn" on:click={nextStep}>Боб получает сообщение</button>
+        <button class="action-btn" on:click={nextStep}>{$tStore('aliceBob.step4.button')}</button>
       </div>
     {:else if step === 5}
       <div class="step-box success">
-        <h3>Шаг 5: Боб расшифровывает</h3>
+        <h3>{$tStore('aliceBob.step5.title')}</h3>
         <div class="message-flow">
           <div class="message-box encrypted">
-            <strong>Получено:</strong> {encryptedMessage?.ciphertext}
+            <strong>{$tStore('aliceBob.step5.received')}:</strong> {encryptedMessage?.ciphertext ?? ''}
           </div>
           <div class="arrow-large">↓</div>
           <div class="message-box decrypted">
-            <strong>Расшифровано:</strong> {decryptedMessage?.message}
+            <strong>{$tStore('aliceBob.step5.decrypted')}:</strong> {decryptedMessage?.message ?? ''}
           </div>
         </div>
         <div class="success-message">
-          <p>Боб успешно прочитал сообщение Алисы!</p>
-          <p>Только Боб мог расшифровать, потому что только у него есть приватный ключ.</p>
+          <p>{$tStore('aliceBob.step5.success1')}</p>
+          <p>{$tStore('aliceBob.step5.success2')}</p>
         </div>
-        <button class="action-btn" on:click={reset}>Начать заново</button>
+        <button class="action-btn" on:click={reset}>{$tStore('aliceBob.step5.button')}</button>
       </div>
     {/if}
   </div>
   
   {#if step >= 3 && aliceKeys && bobKeys}
     <div class="math-visualization">
-      <h4>Что происходит математически:</h4>
+      <h4>{$tStore('aliceBob.math.title')}</h4>
       {#if step === 3}
         <div class="formula-step">
-          <p>Алиса шифрует сообщение m используя публичный ключ Боба:</p>
+          <p>{$tStore('aliceBob.math.encrypt')}</p>
           <MathNotation formula={'c = m^{' + bobKeys.public.e + '} \\bmod ' + bobKeys.public.n} displayMode={true} />
         </div>
       {:else if step >= 4}
         <div class="formula-step">
-          <p>Боб расшифровывает используя свой приватный ключ:</p>
+          <p>{$tStore('aliceBob.math.decrypt')}</p>
           <MathNotation formula={'m = c^{' + bobKeys.private.d + '} \\bmod ' + bobKeys.private.n} displayMode={true} />
         </div>
       {/if}
@@ -398,6 +418,16 @@
     color: var(--text-tertiary);
     font-style: italic;
     margin-top: 1rem;
+  }
+  
+  .error-message {
+    color: var(--error);
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 4px;
+    border: 1px solid var(--error);
   }
   
   .message-flow {

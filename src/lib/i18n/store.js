@@ -4,17 +4,19 @@ import { writable, derived } from 'svelte/store';
 // Load translations
 import enTranslations from './locales/en.json';
 import ruTranslations from './locales/ru.json';
+import kgTranslations from './locales/kg.json';
 
 const translations = {
   en: enTranslations,
-  ru: ruTranslations
+  ru: ruTranslations,
+  kg: kgTranslations
 };
 
 // Get initial language from localStorage or default to 'en'
 function getInitialLanguage() {
   if (typeof window !== 'undefined') {
     const saved = localStorage.getItem('shamirlab-language');
-    if (saved && ['en', 'ru'].includes(saved)) {
+    if (saved && ['en', 'ru', 'kg'].includes(saved)) {
       return saved;
     }
   }
@@ -60,7 +62,8 @@ export const tStore = derived(locale, ($locale) => {
 
 // Available languages
 export const languages = [
-  { code: 'en', name: 'English' },
-  { code: 'ru', name: 'Русский' }
+  { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+  { code: 'kg', name: 'Кыргызча', flag: '🇰🇬' }
 ];
 
