@@ -6,6 +6,7 @@
   import FAQ from './lib/components/FAQ.svelte';
   import KeyPairGame from './lib/components/KeyPairGame.svelte';
   import RSACity from './lib/components/RSACity/RSACity.svelte';
+  import ZKRouter from './lib/components/zk/ZKRouter.svelte';
   
   let currentRoute = 'home';
   
@@ -37,7 +38,7 @@
   class:sha256-page={currentRoute === 'sha256'}
   class:ripemd-page={currentRoute === 'ripemd'}
   class:nonce-page={currentRoute === 'nonce'}
-  class:rsa-city-page={currentRoute === 'rsa-city'}
+  class:zk-page={currentRoute.startsWith('zk')}
 >
   {#if currentRoute === 'home' || currentRoute === ''}
     <MainMenu />
@@ -51,6 +52,8 @@
     <KeyPairGame />
   {:else if currentRoute === 'rsa-city'}
     <RSACity />
+  {:else if currentRoute.startsWith('zk')}
+    <ZKRouter route={currentRoute} />
   {:else}
     <div class="not-found">
       <h2>404 - Not Found</h2>
@@ -103,9 +106,10 @@
     background-image: url('/background5.jpg');
     opacity: 0.5;
   }
-  
-  main.rsa-city-page::before {
-    opacity: 0;
+
+  main.zk-page::before {
+    background-image: url('/background4.jpg');
+    opacity: 0.45;
   }
   
   main::after {
