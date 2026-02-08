@@ -110,7 +110,7 @@
     width: 26px;
     height: 26px;
     border-radius: 6px;
-    background: {accent};
+    background: var(--accent);
     color: #0a0a0a;
     font-weight: 800;
     font-size: 0.9rem;
@@ -122,7 +122,7 @@
   }
 
   button {
-    background: {accent};
+    background: var(--accent);
     color: #0a0a0a;
     padding: 10px 16px;
     border-radius: 10px;

@@ -7,7 +7,7 @@
   export let breadcrumb = '';
 </script>
 
-<div class="zk-shell">
+<div class="zk-shell" style={`--accent:${accent}`}>
   <nav class="nav">
     <a class="nav-link" href={backHref}>🏠 Карта</a>
     {#if prevHref}
@@ -63,11 +63,11 @@
   }
 
   .nav-link:hover {
-    color: {accent};
+    color: var(--accent);
   }
 
   .nav-link.active {
-    color: {accent};
+    color: var(--accent);
   }
 
   .content {
@@ -107,7 +107,7 @@
     font-size: 1.5rem;
     border-bottom: 1px solid var(--border-medium);
     padding-bottom: 12px;
-    color: {accent};
+    color: var(--accent);
   }
 
   h2 {

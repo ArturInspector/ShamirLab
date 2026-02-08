@@ -119,7 +119,7 @@
 
   button {
     margin-top: 12px;
-    background: {accent};
+    background: var(--accent);
     color: #0a0a0a;
     padding: 12px 18px;
     border-radius: 10px;

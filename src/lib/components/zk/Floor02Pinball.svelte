@@ -229,7 +229,7 @@
   }
 
   button {
-    background: {accent};
+    background: var(--accent);
     color: #0a0a0a;
     padding: 10px 16px;
     border-radius: 10px;
