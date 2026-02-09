@@ -16,6 +16,11 @@
       "description": "Asymmetric encryption algorithm",
       "icon": "🔐"
     },
+    "zk": {
+      "title": "ZK Tower",
+      "description": "Path from field to attestation",
+      "icon": "🛡️"
+    },
     "sha256": {
       "title": "SHA-256 Hash",
       "description": "Cryptographic hash function",

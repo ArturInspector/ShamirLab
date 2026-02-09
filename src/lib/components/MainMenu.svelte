@@ -19,6 +19,13 @@
       available: true
     },
     {
+      id: 'zk',
+      title: $tStore('concepts.zk.title'),
+      description: $tStore('concepts.zk.description'),
+      icon: $tStore('concepts.zk.icon'),
+      available: true
+    },
+    {
       id: 'sha256',
       title: $tStore('concepts.sha256.title'),
       description: $tStore('concepts.sha256.description'),
