@@ -219,6 +219,144 @@
       "camera": "Mouse - camera rotation",
       "exit": "ESC - exit"
     }
+  },
+  "modules": {
+    "title": "Learning Modules",
+    "description": "Choose a module to start learning",
+    "sections": {
+      "basics": {
+        "title": "Cryptography Basics",
+        "description": "Learn fundamental concepts and algorithms",
+        "icon": "📚"
+      },
+      "practice": {
+        "title": "Practice",
+        "description": "Apply knowledge through interactive exercises",
+        "icon": "💪"
+      },
+      "games": {
+        "title": "Games & Fun",
+        "description": "Learn through games and visualization",
+        "icon": "🎮"
+      },
+      "reference": {
+        "title": "Reference Info",
+        "description": "FAQ and additional materials",
+        "icon": "📖"
+      }
+    },
+    "items": {
+      "rsa": {
+        "title": "RSA Encryption",
+        "description": "Step-by-step visualization of RSA algorithm",
+        "duration": "15-20 min",
+        "icon": "🔐"
+      },
+      "concepts": {
+        "title": "Concepts",
+        "description": "SHA-256, RIPEMD-160, NONCE and more",
+        "duration": "10-15 min",
+        "icon": "🧩"
+      },
+      "alice-bob": {
+        "title": "Alice and Bob",
+        "description": "Real scenario of encrypted message exchange",
+        "duration": "10 min",
+        "icon": "👥"
+      },
+      "practice-mode": {
+        "title": "Practice Problems",
+        "description": "Solve encryption and factorization problems",
+        "duration": "20-30 min",
+        "icon": "✍️"
+      },
+      "factorization": {
+        "title": "Breaking Visualization",
+        "description": "Learn how weak keys are broken",
+        "duration": "15 min",
+        "icon": "🔓"
+      },
+      "key-game": {
+        "title": "Game: Find Keys",
+        "description": "Puzzle game to find key pairs",
+        "duration": "10-15 min",
+        "icon": "🎯"
+      },
+      "faq-crypto": {
+        "title": "FAQ: Cryptography",
+        "description": "Answers to popular questions about cryptography",
+        "duration": "10 min",
+        "icon": "❓"
+      },
+      "faq-web3": {
+        "title": "FAQ: Web3",
+        "description": "Introduction to blockchain and Web3",
+        "duration": "15 min",
+        "icon": "🌐"
+      }
+    },
+    "status": {
+      "available": "Available",
+      "coming_soon": "Coming Soon",
+      "in_progress": "In Progress",
+      "completed": "Completed"
+    },
+    "start": "Start",
+    "continue": "Continue",
+    "completed": "✓ Completed"
+  },
+  "aliceBob": {
+    "title": "Alice and Bob: Real Scenario",
+    "alice": "Alice",
+    "bob": "Bob",
+    "publicKey": "Public",
+    "privateKey": "Private",
+    "step1": {
+      "title": "Step 1: Alice generates keys",
+      "description": "Alice chooses prime numbers p={p} and q={q}",
+      "button": "Generate Alice's keys"
+    },
+    "step2": {
+      "title": "Step 2: Bob generates keys",
+      "description": "Bob chooses prime numbers p={p} and q={q}",
+      "button": "Generate Bob's keys"
+    },
+    "step3": {
+      "title": "Step 3: Alice encrypts message",
+      "description": "Alice wants to send Bob a secret message",
+      "placeholder": "Enter message (number)",
+      "button": "Encrypt message",
+      "hint": "Alice uses Bob's public key for encryption"
+    },
+    "step4": {
+      "title": "Step 4: Message is transmitted",
+      "original": "Original",
+      "encrypted": "Encrypted",
+      "securityNote": "Message is transmitted through insecure channel",
+      "button": "Bob receives message"
+    },
+    "step5": {
+      "title": "Step 5: Bob decrypts",
+      "received": "Received",
+      "decrypted": "Decrypted",
+      "success1": "Bob successfully read Alice's message!",
+      "success2": "Only Bob could decrypt because only he has the private key.",
+      "button": "Start over"
+    },
+    "math": {
+      "title": "What happens mathematically:",
+      "encrypt": "Alice encrypts message m using Bob's public key:",
+      "decrypt": "Bob decrypts using his private key:"
+    },
+    "error": {
+      "invalidMessage": "Message must be a number less than n",
+      "encryptionFailed": "Encryption error: {reason}"
+    }
+  },
+  "footer": {
+    "moreProjects": "More projects",
+    "createdBy": "Created by",
+    "buterinWatching": "Vitalik is watching you 👁️"
   }
 }
 

@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import Header from './lib/components/layout/Header.svelte';
+  import Footer from './lib/components/layout/Footer.svelte';
   import MainMenu from './lib/components/MainMenu.svelte';
   import RSAVisualization from './lib/components/RSAVisualization.svelte';
   import FAQ from './lib/components/FAQ.svelte';
@@ -62,6 +63,7 @@
     </div>
   {/if}
 </main>
+<Footer />
 
 <style>
   main {

@@ -3,6 +3,7 @@
   import { tStore } from '../i18n/store.js';
   import { RSAKeyGenerator } from '../algorithms/rsa.js';
   import { isPrime } from '../algorithms/primeUtils.js';
+  import { createConfetti, createRipple, copyToClipboard } from '../utils/confetti.js';
   
   let selectedPublic = null;
   let selectedPrivate = null;
@@ -107,6 +108,7 @@
       
       if (matchedPairs.size === keyPairs.length) {
         gameWon = true;
+        createConfetti();
         if (timerInterval) {
           clearInterval(timerInterval);
         }
@@ -153,6 +155,11 @@
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
+  
+  function handleCopyKey(key) {
+    const keyStr = key.e ? `Public: (e=${key.e}, n=${key.n})` : `Private: (d=${key.d}, n=${key.n})`;
+    copyToClipboard(keyStr);
   }
 </script>
 
@@ -232,8 +239,13 @@
               class="key-card public"
               class:selected={selectedPublic?.pairId === key.pairId}
               class:matched={matchedPairs.has(key.pairId)}
-              on:click={() => selectPublic(key)}
+              on:click={(e) => {
+                createRipple(e);
+                selectPublic(key);
+              }}
+              on:dblclick={() => handleCopyKey(key)}
               disabled={matchedPairs.has(key.pairId)}
+              title="Double-click to copy"
             >
               <div class="key-label">e = {key.e}</div>
               <div class="key-value">n = {key.n}</div>
@@ -250,8 +262,13 @@
               class="key-card private"
               class:selected={selectedPrivate?.pairId === key.pairId}
               class:matched={matchedPairs.has(key.pairId)}
-              on:click={() => selectPrivate(key)}
+              on:click={(e) => {
+                createRipple(e);
+                selectPrivate(key);
+              }}
+              on:dblclick={() => handleCopyKey(key)}
               disabled={matchedPairs.has(key.pairId)}
+              title="Double-click to copy"
             >
               <div class="key-label">d = {key.d}</div>
               <div class="key-value">n = {key.n}</div>
@@ -458,6 +475,8 @@
     transition: all 0.3s ease;
     font-family: var(--font-mono);
     text-align: center;
+    position: relative;
+    overflow: hidden;
   }
   
   .key-card:hover:not(:disabled) {
