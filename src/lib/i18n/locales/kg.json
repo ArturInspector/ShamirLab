@@ -10,6 +10,18 @@
     "about": "Жөнүндө",
     "language": "Тил"
   },
+  "menu": {
+    "tabs": {
+      "concepts": "Түшүнүктөр",
+      "aliceBob": "Алиса жана Боб",
+      "crack": "Бузуу",
+      "practice": "Практика",
+      "faqCrypto": "FAQ: Крипто",
+      "faqWeb3": "FAQ: Web3",
+      "keyGame": "Оюн: Ачкычтар",
+      "rsaCity": "RSA Крипто Шаар"
+    }
+  },
   "concepts": {
     "rsa": {
       "title": "RSA Шифрлөө",

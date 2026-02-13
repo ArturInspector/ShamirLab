@@ -10,6 +10,18 @@
     "about": "О проекте",
     "language": "Язык"
   },
+  "menu": {
+    "tabs": {
+      "concepts": "Концепции",
+      "aliceBob": "Алиса и Боб",
+      "crack": "Взлом",
+      "practice": "Практика",
+      "faqCrypto": "FAQ: Крипта",
+      "faqWeb3": "FAQ: Web3",
+      "keyGame": "Игра: Ключи",
+      "rsaCity": "RSA Crypto City"
+    }
+  },
   "concepts": {
     "rsa": {
       "title": "RSA Шифрование",

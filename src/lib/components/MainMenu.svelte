@@ -70,49 +70,49 @@
       class:active={activeSection === 'concepts'}
       on:click={() => activeSection = 'concepts'}
     >
-      Концепции
+      {$tStore('menu.tabs.concepts')}
     </button>
     <button 
       class="practice-tab"
       class:active={activeSection === 'alice-bob'}
       on:click={() => activeSection = 'alice-bob'}
     >
-      Алиса и Боб
+      {$tStore('menu.tabs.aliceBob')}
     </button>
     <button 
       class="practice-tab"
       class:active={activeSection === 'factorize'}
       on:click={() => activeSection = 'factorize'}
     >
-      Взлом
+      {$tStore('menu.tabs.crack')}
     </button>
     <button 
       class="practice-tab"
       class:active={activeSection === 'practice'}
       on:click={() => activeSection = 'practice'}
     >
-      Практика
+      {$tStore('menu.tabs.practice')}
     </button>
     <button 
       class="practice-tab"
       class:active={activeSection === 'faq-crypto'}
       on:click={() => activeSection = 'faq-crypto'}
     >
-      FAQ: Крипта 
+      {$tStore('menu.tabs.faqCrypto')}
     </button>
     <button 
       class="practice-tab"
       class:active={activeSection === 'faq-web3'}
       on:click={() => activeSection = 'faq-web3'}
     >
-      FAQ: Web3
+      {$tStore('menu.tabs.faqWeb3')}
     </button>
     <button 
       class="practice-tab"
       class:active={activeSection === 'key-game'}
       on:click={() => activeSection = 'key-game'}
     >
-      Игра: Ключи
+      {$tStore('menu.tabs.keyGame')}
     </button>
     <button 
       class="practice-tab"
@@ -122,7 +122,7 @@
         window.location.hash = '#/rsa-city';
       }}
     >
-      RSA Crypto City
+      {$tStore('menu.tabs.rsaCity')}
     </button>
   </div>
   

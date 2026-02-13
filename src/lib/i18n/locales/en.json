@@ -10,6 +10,18 @@
     "about": "About",
     "language": "Language"
   },
+  "menu": {
+    "tabs": {
+      "concepts": "Concepts",
+      "aliceBob": "Alice & Bob",
+      "crack": "Crack",
+      "practice": "Practice",
+      "faqCrypto": "FAQ: Crypto",
+      "faqWeb3": "FAQ: Web3",
+      "keyGame": "Game: Keys",
+      "rsaCity": "RSA Crypto City"
+    }
+  },
   "concepts": {
     "rsa": {
       "title": "RSA Encryption",
