@@ -1,5 +1,7 @@
 <script>
   import ZKTowerLanding from './ZKTowerLanding.svelte';
+  import Floor00Intro from './Floor00Intro.svelte';
+  import FloorPlayground from './FloorPlayground.svelte';
   import Floor01NoDivision from './Floor01NoDivision.svelte';
   import Floor02Pinball from './Floor02Pinball.svelte';
   import Floor03Polynomial from './Floor03Polynomial.svelte';
@@ -13,6 +15,8 @@
 
   const map = {
     'zk': ZKTowerLanding,
+    'zk/intro': Floor00Intro,
+    'zk/playground': FloorPlayground,
     'zk/floor-01': Floor01NoDivision,
     'zk/floor-02': Floor02Pinball,
     'zk/floor-03': Floor03Polynomial,
@@ -31,7 +35,7 @@
 {:else}
   <div class="fallback">
     <h2>Этаж не найден</h2>
-    <a href="#/zk">← Вернуться к башне</a>
+    <a href="#/zk">← Вернуться в Крепость</a>
   </div>
 {/if}
 
