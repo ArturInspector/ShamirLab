@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CITADEL: FINAL MIX (Fixed Camera)</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            color: #eee;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Nav Bar */
+        .nav-bar {
+            width: 100%;
+            height: 60px;
+            background: #111;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0;
+            z-index: 1000;
+        }
+
+        .nav-link {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .nav-link:hover {
+            color: #ffd700;
+        }
+
+        .nav-link.active {
+            color: #ffd700;
+        }
+
+        /* MAIN LAYOUT */
+        .main-content {
+            display: flex;
+            flex: 1;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* LEFT: VISUALIZATION */
+        #canvas-container {
+            flex: 1;
+            background: #050510;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* RIGHT: THEORY */
+        #theory-panel {
+            width: 400px;
+            min-width: 350px;
+            background: #0a0a0a;
+            padding: 30px;
+            overflow-y: auto;
+            border-left: 1px solid #333;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            color: #ffd700;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.5rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        h2 {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-top: 30px;
+        }
+
+        p,
+        li {
+            line-height: 1.6;
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        .action-btn {
+            display: block;
+            margin-top: 30px;
+            padding: 15px;
+            background: #222;
+            color: #ffd700;
+            text-align: center;
+            text-decoration: none;
+            border: 1px solid #ffd700;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.2s;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .action-btn:hover {
+            background: #ffd700;
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .status-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-family: monospace;
+            color: #00ffff;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border: 1px solid #00ffff;
+            pointer-events: none;
+        }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <!-- Shaders -->
+    <script type="x-shader/x-fragment" id="fragmentShader">
+        uniform sampler2D tDiffuse;
+        uniform float distortion;
+        uniform float time;
+        uniform float grainStrength;
+        varying vec2 vUv;
+
+        float random(vec2 p) {
+            vec2 K1 = vec2(23.140692632, 2.665144142);
+            return fract(cos(dot(p,K1)) * 12345.6789);
+        }
+
+        void main() {
+            vec2 uv = vUv;
+            
+            // RGB Split (Aberration)
+            float d = length(uv - 0.5);
+            float amount = distortion * (pow(d, 2.5) * 0.1); 
+
+            vec4 r = texture2D(tDiffuse, uv + vec2(amount, 0.0));
+            vec4 g = texture2D(tDiffuse, uv);
+            vec4 b = texture2D(tDiffuse, uv - vec2(amount, 0.0));
+            
+            vec3 color = vec3(r.r, g.g, b.b);
+            color += (random(uv * time) - 0.5) * grainStrength;
+            
+            gl_FragColor = vec4(color, 1.0);
+        }
+    </script>
+    <script type="x-shader/x-vertex" id="vertexShader">
+        varying vec2 vUv;
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    </script>
+</head>
+
+<body>
+
+    <nav class="nav-bar">
+        <a href="index.html" class="nav-link">🏠 Карта</a>
+        <a href="zk_proving_matrix.html" class="nav-link">← Назад</a>
+        <span class="nav-link active">Пентхаус: Цитадель</span>
+        <a href="index.html" class="nav-link" style="color: #ffd700;">ФИНАЛ 🏆</a>
+    </nav>
+
+    <div class="main-content">
+        <div id="canvas-container">
+            <div class="status-overlay" id="status-log">
+                SYSTEM: WAITING FOR PROOF<br>
+                HEIGHT: BLOCK #192401
+            </div>
+        </div>
+
+        <div id="theory-panel">
+            <h1>Цитадель Аттестации</h1>
+
+            <p>Добро пожаловать в Пентхаус. Это последний этаж нашего небоскреба.</p>
+
+            <h2>1. Совет Валидаторов</h2>
+            <p>Здесь сидит строгая комиссия (Ethereum Smart Contract). Они не верят никому на слово.</p>
+
+            <h2>2. Предъявление Доказательства</h2>
+            <p>Вы (Прувер) принесли маленький 32-байтовый чек (Proof) с 7-го этажа.</p>
+            <p>Валидаторы запускают свой алгоритм проверки. Это стоит около 200,000 газа ($$$).</p>
+
+            <h2>3. Finality (Финал)</h2>
+            <p>Если доказательство верно, состояние блокчейна обновляется. Ваш "Небоскреб" официально принят в
+                эксплуатацию.</p>
+
+            <button id="btn-verify" class="action-btn">ПОДПИСАТЬ КОНТРАКТ (VERIFY)</button>
+
+            <div id="success-msg"
+                style="display:none; margin-top: 20px; color: #ffd700; border: 1px solid #ffd700; padding: 10px;">
+                <strong>УСПЕХ!</strong><br>
+                Ваш ZK Proof принят сетью Ethereum.<br>
+                <a href="index.html" style="color: #fff; text-decoration: underline;">Вернуться домой</a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+
+        // --- SETUP ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x050510, 0.02);
+
+        const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(0, 5, 40);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "high-performance" });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        // --- COMPOSER ---
+        const composer = new EffectComposer(renderer);
+        const renderPass = new RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        const bloom = new UnrealBloomPass(new THREE.Vector2(container.clientWidth, container.clientHeight), 1.5, 0.4, 0.85);
+        bloom.strength = 0.8;
+        bloom.radius = 0.5;
+        bloom.threshold = 0.1;
+        composer.addPass(bloom);
+
+        const cinePass = new ShaderPass({
+            uniforms: {
+                tDiffuse: { value: null },
+                distortion: { value: 0.5 },
+                time: { value: 0 },
+                grainStrength: { value: 0.1 }
+            },
+            vertexShader: document.getElementById('vertexShader').textContent,
+            fragmentShader: document.getElementById('fragmentShader').textContent
+        });
+        composer.addPass(cinePass);
+
+        const glassMat = new THREE.MeshPhysicalMaterial({
+            color: 0x00aaff, metalness: 0.2, roughness: 0.1, transmission: 0.6, transparent: true, opacity: 0.8
+        });
+
+        // --- OBJECTS ---
+        const citadel = new THREE.Group();
+        citadel.position.y = -5;
+        scene.add(citadel);
+
+        const coreGeo = new THREE.OctahedronGeometry(1.5, 0);
+        const nodes = [];
+
+        for (let i = 0; i < 20; i++) {
+            const mesh = new THREE.Mesh(coreGeo, glassMat.clone());
+            const angle = i * 0.8;
+            const radius = 3 + (i * 0.3);
+            const y = i * 1.5;
+
+            mesh.position.set(Math.cos(angle) * radius, y, Math.sin(angle) * radius);
+            mesh.rotation.set(Math.random(), Math.random(), Math.random());
+            mesh.scale.setScalar(1.0 + (i * 0.05));
+            citadel.add(mesh);
+            nodes.push({ mesh, originalY: y, angle, radius });
+
+            if (i > 0) {
+                const prev = nodes[i - 1].mesh.position;
+                const lineGeo = new THREE.BufferGeometry().setFromPoints([prev, mesh.position]);
+                const line = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: 0x004488, transparent: true, opacity: 0.3 }));
+                citadel.add(line);
+                nodes[i].line = line;
+            }
+        }
+
+        // Rings
+        const ringGeo = new THREE.TorusGeometry(8, 0.1, 16, 100);
+        const ring = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.5 }));
+        ring.rotation.x = Math.PI / 2;
+        ring.position.y = 10;
+        citadel.add(ring);
+
+        // Lights
+        const light = new THREE.PointLight(0x00ffff, 2, 50);
+        light.position.set(0, 10, 0);
+        scene.add(light);
+        scene.add(new THREE.AmbientLight(0x222244));
+
+        // --- ANIMATION ---
+        let time = 0;
+        let phase = 0; // 0=Idle, 1=Verifying, 2=Gold
+
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.01;
+            cinePass.uniforms.time.value = time;
+
+            // Camera float
+            camera.position.x = Math.sin(time * 0.2) * 40;
+            camera.position.z = Math.cos(time * 0.2) * 40;
+            camera.lookAt(0, 10, 0);
+
+            // Rotate Citadel
+            citadel.rotation.y = time * 0.2;
+
+            // Pulse nodes
+            nodes.forEach((n, i) => {
+                n.mesh.position.y = n.originalY + Math.sin(time * 3 + i) * 0.5;
+            });
+
+            if (phase === 1) {
+                // Shake and intensify
+                cinePass.uniforms.distortion.value = 2.0 + Math.sin(time * 20) * 0.5;
+                citadel.rotation.y += 0.1;
+                bloom.strength = 1.5 + Math.sin(time * 10);
+            }
+
+            composer.render();
+        }
+        animate();
+
+        // --- LOGIC ---
+        document.getElementById('btn-verify').onclick = () => {
+            if (phase !== 0) return;
+            phase = 1;
+            document.getElementById('btn-verify').style.display = 'none';
+            document.getElementById('status-log').innerHTML = "STATUS: VERIFYING SIGNATURES...<br>[||||||||||     ] 66%";
+            document.getElementById('status-log').style.color = "#ff00ff";
+            document.getElementById('status-log').style.borderColor = "#ff00ff";
+
+            // Transform to Gold after 3 seconds
+            setTimeout(transformToGold, 3000);
+        };
+
+        function transformToGold() {
+            phase = 2;
+            // Reset effects
+            cinePass.uniforms.distortion.value = 0.0;
+            bloom.strength = 0.8;
+
+            // Material Change
+            const goldMat = new THREE.MeshPhysicalMaterial({
+                color: 0xffd700, metalness: 1.0, roughness: 0.2,
+                emissive: 0xffaa00, emissiveIntensity: 0.2
+            });
+
+            nodes.forEach(n => {
+                n.mesh.material = goldMat;
+            });
+            ring.material.color.setHex(0xffd700);
+            light.color.setHex(0xffd700);
+
+            document.getElementById('status-log').innerHTML = "STATUS: PROOF ACCEPTED<br>BLOCK VALIDATED.";
+            document.getElementById('status-log').style.color = "#ffd700";
+            document.getElementById('status-log').style.borderColor = "#ffd700";
+
+            document.getElementById('success-msg').style.display = 'block';
+        }
+
+        // Window Resize
+        window.onresize = () => {
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            renderer.setSize(w, h);
+            composer.setSize(w, h);
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+        };
+    </script>
+</body>
+
+</html>

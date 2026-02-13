@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZK Decompression Visualizer</title>
+    <style>
+        body {
+            background: #111;
+            color: #eee;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Nav Bar */
+        .nav-bar {
+            width: 100%;
+            height: 60px;
+            background: #1a1a1a;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0;
+            z-index: 1000;
+        }
+
+        .nav-link {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .nav-link:hover {
+            color: #ef4444;
+        }
+
+        .nav-link.active {
+            color: #ef4444;
+        }
+
+        /* MAIN LAYOUT */
+        .main-content {
+            display: flex;
+            flex: 1;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* LEFT: VISUALIZATION */
+        .viz-panel {
+            flex: 1;
+            background: #0f0f12;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-right: 1px solid #333;
+        }
+
+        canvas {
+            background: #18181b;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            border: 1px solid #333;
+        }
+
+        /* RIGHT: THEORY */
+        .theory-panel {
+            width: 400px;
+            min-width: 350px;
+            background: #0a0a0a;
+            padding: 30px;
+            overflow-y: auto;
+            border-left: 1px solid #333;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            color: #ef4444;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.5rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-top: 30px;
+        }
+
+        p,
+        li {
+            line-height: 1.6;
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        .code-block {
+            background: #222;
+            padding: 10px;
+            font-family: monospace;
+            color: #ef4444;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            background: #222;
+            color: #ef4444;
+            text-align: center;
+            border: 1px solid #ef4444;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.2s;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            background: #ef4444;
+            color: #000;
+        }
+
+        .next-btn {
+            display: block;
+            margin-top: 30px;
+            padding: 15px;
+            background: #222;
+            color: #ef4444;
+            text-align: center;
+            text-decoration: none;
+            border: 1px solid #ef4444;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .next-btn:hover {
+            background: #ef4444;
+            color: #000;
+        }
+
+        #ui-status {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-family: monospace;
+            color: #ef4444;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border: 1px solid #ef4444;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="nav-bar">
+        <a href="index.html" class="nav-link">🏠 Карта</a>
+        <a href="merkle_dogs.html" class="nav-link">← Назад</a>
+        <span class="nav-link active">Этаж 6: Чемодан</span>
+        <a href="zk_proving_matrix.html" class="nav-link">Далее →</a>
+    </nav>
+
+    <div class="main-content">
+
+        <!-- LEFT: VISUALIZATION -->
+        <div class="viz-panel">
+            <div id="ui-status">STATE: WAITING FOR PARCEL...</div>
+            <canvas id="curveCanvas" width="600" height="400"></canvas>
+        </div>
+
+        <!-- RIGHT: THEORY PANEL -->
+        <div class="theory-panel">
+            <h1>Чемодан (Decompression)</h1>
+
+            <p>Вы на 6-м этаже. Здесь мы упаковываем груз.</p>
+
+            <h2>1. Проблема: Плата за перевес</h2>
+            <p>Чтобы отправить пруф через сеть, за каждый байт нужно платить. Точка на кривой <code>(X, Y)</code> весит
+                много (2 огромных числа).</p>
+
+            <h2>2. Сжатие в Чемодан</h2>
+            <p>Мы знаем формулу кривой: <br> <span class="code-block">Y² = X³ + 7</span></p>
+            <p>Если мы знаем <strong>X</strong>, мы можем вычислить <strong>Y</strong>! Нам не нужно везти Y.</p>
+            <p>Единственная проблема: квадратный корень дает два ответа (+Y и -Y). Поэтому мы кладем в чемодан:
+            <ul>
+                <li>Координату X</li>
+                <li>Маленький флажок (Sign Bit)</li>
+            </ul>
+            </p>
+
+            <h2>3. Распаковка</h2>
+            <p>Нажми кнопку, чтобы увидеть, как получатель восстанавливает полную точку из сжатого пакета.</p>
+
+            <button class="btn" id="btn-anim">РАСПАКОВАТЬ (DECOMPRESS)</button>
+
+            <a href="zk_proving_matrix.html" class="next-btn">Этаж 7: Краш-Тест (FRI) →</a>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('curveCanvas');
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width;
+        const H = canvas.height;
+        const CX = W / 2;
+        const CY = H / 2;
+        const SCALE = 30;
+
+        let state = 'IDLE'; // IDLE, UNPACKING, SOLVING, DONE
+        let progress = 0;
+
+        // Curve: y^2 = x^3 - 5x + 10 (Chosen for visual niceness)
+        function f(x) {
+            return Math.sqrt(Math.abs(x * x * x - 5 * x + 10));
+        }
+
+        // Target point
+        const TX = 2.5;
+        const TY = f(TX);
+        const BIT = 1; // 1 means positive Y, 0 means negative (arbitrary convention for viz)
+
+        function draw() {
+            // BG
+            ctx.fillStyle = '#18181b';
+            ctx.fillRect(0, 0, W, H);
+
+            // Grid
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, CY); ctx.lineTo(W, CY);
+            ctx.moveTo(CX, 0); ctx.lineTo(CX, H);
+            ctx.stroke();
+
+            // Draw Curve
+            ctx.strokeStyle = '#444';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            let first = true;
+            for (let sx = -CX; sx < CX; sx += 2) {
+                let x = (sx) / SCALE;
+                let y = f(x);
+                if (isNaN(y)) continue;
+
+                let px = CX + x * SCALE;
+                let py1 = CY - y * SCALE;
+
+                if (first) { ctx.moveTo(px, py1); first = false; }
+                else ctx.lineTo(px, py1);
+            }
+            ctx.stroke();
+
+            ctx.beginPath();
+            first = true;
+            for (let sx = -CX; sx < CX; sx += 2) {
+                let x = (sx) / SCALE;
+                let y = f(x); // Symetric
+                if (isNaN(y)) continue;
+
+                let px = CX + x * SCALE;
+                let py2 = CY + y * SCALE;
+
+                if (first) { ctx.moveTo(px, py2); first = false; }
+                else ctx.lineTo(px, py2);
+            }
+            ctx.stroke();
+
+            // Animation Elements
+            if (state === 'IDLE') {
+                // Show "Suitcase" (X only)
+                const px = CX + TX * SCALE;
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(px - 10, CY - 10, 20, 20);
+
+                ctx.fillStyle = '#fff';
+                ctx.font = '12px monospace';
+                ctx.fillText("X-ONLY", px - 20, CY - 20);
+            }
+            else if (state === 'UNPACKING') {
+                // Moving X to position
+                const px = CX + TX * SCALE;
+
+                // Draw vertical scanning line
+                ctx.strokeStyle = '#ef4444';
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(px, 0);
+                ctx.lineTo(px, H);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = '#ef4444';
+                ctx.fillText("CALCULATING Y = SQRT(X^3...)", px + 10, 50);
+            }
+            else if (state === 'SOLVING') {
+                const px = CX + TX * SCALE;
+                const py_top = CY - TY * SCALE;
+                const py_bot = CY + TY * SCALE;
+
+                // Show ghost points
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.beginPath(); ctx.arc(px, py_top, 8, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(px, py_bot, 8, 0, Math.PI * 2); ctx.fill();
+
+                ctx.fillStyle = '#aaa';
+                ctx.fillText("?", px + 15, py_top);
+                ctx.fillText("?", px + 15, py_bot);
+            }
+            else if (state === 'DONE') {
+                const px = CX + TX * SCALE;
+                const py = CY - TY * SCALE; // Positive
+
+                // Correct Point
+                ctx.fillStyle = '#00ff88';
+                ctx.beginPath(); ctx.arc(px, py, 10, 0, Math.PI * 2); ctx.fill();
+
+                // Line to axis
+                ctx.strokeStyle = '#00ff88';
+                ctx.setLineDash([2, 2]);
+                ctx.beginPath();
+                ctx.moveTo(px, py); ctx.lineTo(px, CY);
+                ctx.moveTo(px, py); ctx.lineTo(CX, py);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = '#fff';
+                ctx.fillText(`P(${TX}, ${TY.toFixed(2)})`, px + 15, py - 10);
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            draw();
+        }
+        animate();
+
+        document.getElementById('btn-anim').onclick = () => {
+            if (state !== 'IDLE') return;
+
+            // Scripted sequence
+            state = 'UNPACKING';
+            document.getElementById('ui-status').innerHTML = "STEP 1: PLUG 'X' INTO EQUATION";
+
+            setTimeout(() => {
+                state = 'SOLVING';
+                document.getElementById('ui-status').innerHTML = "STEP 2: SQRT FOUND TWO ROOTS (+/-)";
+            }, 2000);
+
+            setTimeout(() => {
+                state = 'DONE';
+                document.getElementById('ui-status').innerHTML = "STEP 3: SIGN BIT SELECTED (+) -> POINT RESTORED";
+                document.getElementById('ui-status').style.color = "#00ff88";
+                document.getElementById('ui-status').style.borderColor = "#00ff88";
+            }, 4000);
+        };
+
+    </script>
+</body>
+
+</html>

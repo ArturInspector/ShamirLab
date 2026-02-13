@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>MERKLE DOGS TREE</title>
+    <style>
+        body {
+            background: #111;
+            color: #eee;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Nav Bar */
+        .nav-bar {
+            width: 100%;
+            height: 60px;
+            background: #1a1a1a;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0;
+            z-index: 1000;
+        }
+
+        .nav-link {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .nav-link:hover {
+            color: #ffd700;
+        }
+
+        .nav-link.active {
+            color: #ffd700;
+        }
+
+        /* MAIN LAYOUT */
+        .main-content {
+            display: flex;
+            flex: 1;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* LEFT: VISUALIZATION */
+        .viz-panel {
+            flex: 1;
+            background: #0f0f12;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-right: 1px solid #333;
+        }
+
+        /* RIGHT: THEORY */
+        .theory-panel {
+            width: 400px;
+            min-width: 350px;
+            background: #0a0a0a;
+            padding: 30px;
+            overflow-y: auto;
+            border-left: 1px solid #333;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.5rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-top: 30px;
+        }
+
+        p,
+        li {
+            line-height: 1.6;
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        strong {
+            color: #ffd700;
+        }
+
+        /* TREE STYLES */
+        .tree-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            transform: scale(0.9);
+            width: 100%;
+        }
+
+        .level {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 80px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .node {
+            background: #222;
+            border: 2px solid #555;
+            padding: 10px 10px;
+            border-radius: 8px;
+            width: 160px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 0.85em;
+            color: #aaa;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .node.root {
+            border-color: #ffd700;
+            color: #ffd700;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+            background: #332b00;
+        }
+
+        .node.changed {
+            border-color: #ff3333;
+            color: #ff3333;
+            background: #330000;
+            box-shadow: 0 0 15px rgba(255, 51, 51, 0.5);
+            animation: pulse 0.5s;
+        }
+
+        /* DOG CARDS (Residents) */
+        .dog-card {
+            background: #1a1a1a;
+            border: 2px solid #555;
+            border-radius: 12px;
+            padding: 15px;
+            width: 150px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 5;
+        }
+
+        .dog-card:hover {
+            transform: translateY(-5px);
+            border-color: #ffd700;
+        }
+
+        .dog-emoji {
+            font-size: 3em;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .dog-name {
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .dog-state {
+            font-size: 0.8em;
+            color: #888;
+        }
+
+        /* SVG Overlay */
+        svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        path {
+            fill: none;
+            stroke: #333;
+            stroke-width: 2;
+            transition: stroke 0.5s;
+        }
+
+        path.active {
+            stroke: #ff3333;
+            stroke-width: 3;
+            filter: drop-shadow(0 0 5px #ff3333);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .next-btn {
+            display: block;
+            margin-top: 30px;
+            padding: 15px;
+            background: #222;
+            color: #ffd700;
+            text-align: center;
+            text-decoration: none;
+            border: 1px solid #ffd700;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .next-btn:hover {
+            background: #ffd700;
+            color: #000;
+        }
+
+        .status-badge {
+            background: #222;
+            padding: 10px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            color: #00ff00;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="nav-bar">
+        <a href="index.html" class="nav-link">🏠 Карта</a>
+        <a href="trace_to_polynomial.html" class="nav-link">← Назад</a>
+        <span class="nav-link active">Этаж 5: Охрана</span>
+        <a href="zk_decompression.html" class="nav-link">Далее →</a>
+    </nav>
+
+    <div class="main-content">
+
+        <!-- LEFT: VISUALIZATION -->
+        <div class="viz-panel">
+            <div class="tree-container" id="tree">
+                <svg id="connections"></svg>
+
+                <!-- LEVEL 0: ROOT -->
+                <div class="level" id="lvl-0"></div>
+
+                <!-- LEVEL 1 -->
+                <div class="level" id="lvl-1"></div>
+
+                <!-- LEVEL 2 -->
+                <div class="level" id="lvl-2"></div>
+
+                <!-- LEVEL 3 (Residents) -->
+                <div class="level" id="lvl-3">
+                    <div class="dog-card" id="dog-0" onclick="updateDog(0)">
+                        <span class="dog-emoji">👷‍♂️</span>
+                        <div class="dog-name">Петр</div>
+                        <div class="dog-state">Спит</div>
+                    </div>
+                    <div class="dog-card" id="dog-1" onclick="updateDog(1)">
+                        <span class="dog-emoji">👩‍🔧</span>
+                        <div class="dog-name">Анна</div>
+                        <div class="dog-state">Работает</div>
+                    </div>
+                    <div class="dog-card" id="dog-2" onclick="updateDog(2)">
+                        <span class="dog-emoji">🧱</span>
+                        <div class="dog-name">Цемент</div>
+                        <div class="dog-state">На месте</div>
+                    </div>
+                    <div class="dog-card" id="dog-3" onclick="updateDog(3)">
+                        <span class="dog-emoji">🏗️</span>
+                        <div class="dog-name">Кран</div>
+                        <div class="dog-state">Свободен</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: THEORY PANEL -->
+        <div class="theory-panel">
+            <h1>Этаж 5: Охрана (Merkle)</h1>
+
+            <p>Добро пожаловать в Службу Безопасности Небоскреба.</p>
+
+            <div class="status-badge" id="root-status">ROOT CA: MATCH</div>
+
+            <h2>1. Проблема: Тотальный Контроль</h2>
+            <p>У нас тысячи рабочих и кирпичей. Как Директору (Верификатору) убедиться, что никто не украл мешок
+                цемента, не обходя стройку лично?</p>
+
+            <h2>2. Решение: Дерево Меркла</h2>
+            <p>Мы используем криптографические "отпечатки пальцев" (Хэши).</p>
+            <ul>
+                <li>Мы берем хэш каждого объекта.</li>
+                <li>Склеиваем их попарно.</li>
+                <li>Получаем <strong>Один Главный Ключ (Root)</strong>.</li>
+            </ul>
+
+            <div
+                style="background: #2a1100; border: 1px solid #ff4400; padding: 15px; border-radius: 5px; margin-top:20px;">
+                <p style="margin:0; color: #ffaa80; font-weight: bold;">🚨 СИРЕНА:</p>
+                <p style="margin-top:10px; color: #ccc;">Кликни на любого рабочего (измени его статус). Смотри, как
+                    тревога (красный цвет) поднимается вверх и <strong>меняет Root</strong>!</p>
+            </div>
+
+            <h2>3. Вывод</h2>
+            <p>Если хотя бы один кирпич сдвинется на миллиметр, Главный Ключ изменится. Верификатор это сразу заметит.
+            </p>
+
+            <a href="zk_decompression.html" class="next-btn">Этаж 6: Чемодан →</a>
+        </div>
+
+    </div>
+
+    <script>
+        // Simple Hash Function
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return "0x" + Math.abs(hash).toString(16).padStart(8, '0');
+        }
+
+        // Data State (Residents)
+        const residents = [
+            { name: "Петр", state: "Спит", emoji: "👷‍♂️" },
+            { name: "Анна", state: "Работает", emoji: "👩‍🔧" },
+            { name: "Цемент", state: "На месте", emoji: "🧱" },
+            { name: "Кран", state: "Свободен", emoji: "🏗️" }
+        ];
+
+        let treeData = { lvl2: [], lvl1: [], lvl0: [] };
+
+        function calculateTree() {
+            treeData.lvl2 = residents.map(d => simpleHash(d.name + d.state));
+            treeData.lvl1 = [];
+            treeData.lvl1.push(simpleHash(treeData.lvl2[0] + treeData.lvl2[1]));
+            treeData.lvl1.push(simpleHash(treeData.lvl2[2] + treeData.lvl2[3]));
+            treeData.lvl0 = [simpleHash(treeData.lvl1[0] + treeData.lvl1[1])];
+        }
+
+        function renderHashes(changedIndices = []) {
+            const l2 = document.getElementById('lvl-2');
+            const l1 = document.getElementById('lvl-1');
+            const l0 = document.getElementById('lvl-0');
+
+            l2.innerHTML = treeData.lvl2.map((h, i) =>
+                `<div class="node ${changedIndices.includes('2-' + i) ? 'changed' : ''}" id="node-2-${i}">HASH: ${h}</div>`
+            ).join('');
+
+            l1.innerHTML = treeData.lvl1.map((h, i) =>
+                `<div class="node ${changedIndices.includes('1-' + i) ? 'changed' : ''}" id="node-1-${i}">HASH: ${h}</div>`
+            ).join('');
+
+            l0.innerHTML = `<div class="node root ${changedIndices.includes('0-0') ? 'changed' : ''}" id="node-0-0">ROOT: ${treeData.lvl0[0]}</div>`;
+
+            if (changedIndices.length > 0) {
+                document.getElementById('root-status').innerText = "ROOT CHANGED! INVALID STATE";
+                document.getElementById('root-status').style.color = "red";
+            } else {
+                document.getElementById('root-status').innerText = "ROOT MATCH: SYSTEM SECURE";
+                document.getElementById('root-status').style.color = "#00ff00";
+            }
+
+            requestAnimationFrame(() => drawLines(changedIndices));
+        }
+
+        function drawLines(changedIndices) {
+            const svg = document.getElementById('connections');
+            svg.innerHTML = '';
+
+            const treeEl = document.getElementById('tree');
+            const treeRect = treeEl.getBoundingClientRect();
+
+            function getPosTop(id) {
+                const el = document.getElementById(id);
+                if (!el) return { x: 0, y: 0 };
+                const rect = el.getBoundingClientRect();
+                return { x: rect.left + rect.width / 2 - treeRect.left, y: rect.top - treeRect.top };
+            }
+
+            function getPosBottom(id) {
+                const el = document.getElementById(id);
+                if (!el) return { x: 0, y: 0 };
+                const rect = el.getBoundingClientRect();
+                return { x: rect.left + rect.width / 2 - treeRect.left, y: rect.bottom - treeRect.top };
+            }
+
+            function connect(idTop, idBottom, isActive) {
+                const p1 = getPosBottom(idTop);
+                const p2 = getPosTop(idBottom);
+
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                const d = `M ${p1.x} ${p1.y} C ${p1.x} ${p1.y + 30}, ${p2.x} ${p2.y - 30}, ${p2.x} ${p2.y}`;
+                path.setAttribute("d", d);
+                if (isActive) path.classList.add('active');
+                svg.appendChild(path);
+            }
+
+            // Root -> L1
+            connect('node-0-0', 'node-1-0', changedIndices.includes('1-0'));
+            connect('node-0-0', 'node-1-1', changedIndices.includes('1-1'));
+
+            // L1 -> L2
+            connect('node-1-0', 'node-2-0', changedIndices.includes('2-0'));
+            connect('node-1-0', 'node-2-1', changedIndices.includes('2-1'));
+            connect('node-1-1', 'node-2-2', changedIndices.includes('2-2'));
+            connect('node-1-1', 'node-2-3', changedIndices.includes('2-3'));
+
+            // L2 -> Residents
+            for (let i = 0; i < 4; i++) {
+                connect(`node-2-${i}`, `dog-${i}`, changedIndices.includes(`2-${i}`));
+            }
+        }
+
+        window.updateDog = function (index) {
+            const resident = residents[index];
+            // Toggle State
+            if (index === 0) resident.state = resident.state === "Спит" ? "Бдит" : "Спит";
+            if (index === 1) resident.state = resident.state === "Работает" ? "Обед" : "Работает";
+            if (index === 2) resident.state = resident.state === "На месте" ? "Украден" : "На месте";
+            if (index === 3) resident.state = resident.state === "Свободен" ? "Грузит" : "Свободен";
+
+            const card = document.getElementById(`dog-${index}`);
+            card.querySelector('.dog-state').innerText = resident.state;
+            card.classList.add('changed');
+            setTimeout(() => card.classList.remove('changed'), 500);
+
+            const oldL2 = [...treeData.lvl2];
+            calculateTree();
+
+            let changed = [];
+            if (treeData.lvl2[index] !== oldL2[index]) changed.push(`2-${index}`);
+
+            // Check L1
+            // Recalculate which L1 index is affected
+            const parentL1 = Math.floor(index / 2);
+            changed.push(`1-${parentL1}`);
+
+            // Root always changes if leaf changes
+            changed.push(`0-0`);
+
+            renderHashes(changed);
+        };
+
+        calculateTree();
+        setTimeout(() => renderHashes(), 100);
+        window.onresize = () => renderHashes();
+
+    </script>
+</body>
+
+</html>

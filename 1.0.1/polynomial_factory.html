@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>POLYNOMIAL FACTORY: LAGRANGE</title>
+    <style>
+        body {
+            background: #111;
+            color: #eee;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Nav Bar */
+        .nav-bar {
+            width: 100%;
+            height: 60px;
+            background: #1a1a1a;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0;
+            z-index: 1000;
+        }
+
+        .nav-link {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .nav-link:hover {
+            color: #3b82f6;
+        }
+
+        .nav-link.active {
+            color: #3b82f6;
+        }
+
+        /* MAIN LAYOUT */
+        .main-content {
+            display: flex;
+            flex: 1;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* LEFT: VISUALIZATION */
+        .viz-panel {
+            flex: 1;
+            background: #0d1a2b;
+            /* Blueprint Blue */
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-right: 1px solid #333;
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        /* RIGHT: THEORY */
+        .theory-panel {
+            width: 400px;
+            min-width: 350px;
+            background: #0a0a0a;
+            padding: 30px;
+            overflow-y: auto;
+            border-left: 1px solid #333;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            color: #3b82f6;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.5rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-top: 30px;
+        }
+
+        p {
+            line-height: 1.6;
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        .next-btn {
+            display: block;
+            margin-top: 30px;
+            padding: 15px;
+            background: #222;
+            color: #3b82f6;
+            text-align: center;
+            text-decoration: none;
+            border: 1px solid #3b82f6;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .next-btn:hover {
+            background: #3b82f6;
+            color: #fff;
+        }
+
+        canvas {
+            border: 2px solid #1c3a5e;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            cursor: move;
+            background:
+                linear-gradient(#1c3a5e 1px, transparent 1px),
+                linear-gradient(90deg, #1c3a5e 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-color: #0d1a2b;
+        }
+
+        .controls {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .toggle-btn {
+            background: #1c3a5e;
+            color: #8b949e;
+            border: 1px solid #304b73;
+            padding: 5px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8em;
+            text-transform: uppercase;
+        }
+
+        .toggle-btn.active {
+            background: #3b82f6;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="nav-bar">
+        <a href="index.html" class="nav-link">🏠 Карта</a>
+        <a href="zk_pinball_madness.html" class="nav-link">← Назад</a>
+        <span class="nav-link active">Этаж 3: Крыша</span>
+        <a href="trace_to_polynomial.html" class="nav-link">Далее →</a>
+    </nav>
+
+    <div class="main-content">
+
+        <!-- VISUALIZATION LEFT -->
+        <div class="viz-panel">
+            <canvas id="plot" width="800" height="500"></canvas>
+
+            <div class="controls">
+                <button class="toggle-btn active" id="btn-show-poly">Show Roof (Final)</button>
+                <button class="toggle-btn active" id="btn-show-basis">Show Beams (Basis)</button>
+            </div>
+
+            <div id="formula-display" style="margin-top: 10px; font-family: monospace; color: #88c0d0;">
+                <!-- Formula -->
+            </div>
+        </div>
+
+        <!-- THEORY RIGHT -->
+        <div class="theory-panel">
+            <h1>Чертеж Крыши</h1>
+
+            <p>Вы поднялись на 3-й этаж. Здесь мы учимся накрывать данные математической крышей.</p>
+
+            <h2>1. От точек к Линии</h2>
+            <p>Представь, что столбики на графике — это опорные балки нашего здания. Они разной высоты.</p>
+            <p>Нам нужно положить на них <strong>одну идеально гладкую крышу</strong> (полином), которая коснется каждой
+                верхушки.</p>
+
+            <h2>2. Интерполяция Лагранжа</h2>
+            <p>Как найти уравнение этой крыши? Мы используем трюк Лагранжа.</p>
+            <p>Мы создаем для каждой балки свою "личную волну" (базисный полином), которая равна <strong>1</strong> на
+                этой балке и <strong>0</strong> на всех остальных.</p>
+
+            <h2>3. Интерактив</h2>
+            <p>Попробуй потянуть за цветные кружки (верхушки балок). Заметь, как меняется форма крыши, подстраиваясь под
+                новую высоту.</p>
+            <p>В ZK это позволяет нам "закодировать" огромный массив данных в одно короткое уравнение.</p>
+
+            <a href="trace_to_polynomial.html" class="next-btn">Этаж 4: Журнал Прораба →</a>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('plot');
+        const ctx = canvas.getContext('2d');
+        const formulaDisplay = document.getElementById('formula-display');
+
+        let showFinal = true;
+        let showBasis = true;
+
+        document.getElementById('btn-show-poly').onclick = (e) => {
+            showFinal = !showFinal;
+            e.target.classList.toggle('active');
+            draw();
+        };
+        document.getElementById('btn-show-basis').onclick = (e) => {
+            showBasis = !showBasis;
+            e.target.classList.toggle('active');
+            draw();
+        };
+
+        // Resizing
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth - 40;
+            canvas.height = container.clientHeight - 80;
+            draw();
+        }
+        window.addEventListener('resize', resizeCanvas);
+        // Initial setup
+        setTimeout(resizeCanvas, 100);
+
+        // Data Points
+        // Proportional positions (0.0 - 1.0)
+        const points = [
+            { xRatio: 0.15, yRatio: 0.6, color: '#ff7b72', id: 0 },
+            { xRatio: 0.4, yRatio: 0.3, color: '#79c0ff', id: 1 },
+            { xRatio: 0.65, yRatio: 0.7, color: '#d2a8ff', id: 2 },
+            { xRatio: 0.9, yRatio: 0.2, color: '#ffa657', id: 3 }
+        ];
+
+        let draggingPoint = null;
+
+        // Basis Function logic
+        function basisPoly(i, x, w) {
+            let num = 1;
+            let den = 1;
+            const xi = points[i].xRatio * w;
+
+            for (let j = 0; j < points.length; j++) {
+                if (i !== j) {
+                    const xj = points[j].xRatio * w;
+                    num *= (x - xj);
+                    den *= (xi - xj);
+                }
+            }
+            return num / den;
+        }
+
+        function draw() {
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            const centerY = h / 2;
+
+            // 1. Draw Basis Lines
+            if (showBasis) {
+                for (let i = 0; i < points.length; i++) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = points[i].color;
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([5, 5]);
+
+                    for (let px = 0; px <= w; px += 4) {
+                        const L_val = basisPoly(i, px, w);
+
+                        // Scale height: let's say max amplitude is h/2
+                        // Point Y is pixels from top. 
+                        // Visual Y = centerY - ( (centerY - pt.y) * L_val )
+
+                        const ptY = points[i].yRatio * h;
+                        const amplitude = centerY - ptY;
+
+                        const py = centerY - (amplitude * L_val);
+
+                        if (px === 0) ctx.moveTo(px, py);
+                        else ctx.lineTo(px, py);
+                    }
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
+
+            // 2. Draw Final Poly
+            if (showFinal) {
+                ctx.beginPath();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 3;
+                ctx.shadowColor = '#00ff88';
+                ctx.shadowBlur = 10;
+
+                for (let px = 0; px <= w; px += 2) {
+                    let totalAmp = 0;
+                    for (let i = 0; i < points.length; i++) {
+                        const L_val = basisPoly(i, px, w);
+                        const ptY = points[i].yRatio * h;
+                        const amplitude = centerY - ptY;
+                        totalAmp += amplitude * L_val;
+                    }
+                    const finalPy = centerY - totalAmp;
+
+                    if (px === 0) ctx.moveTo(px, finalPy);
+                    else ctx.lineTo(px, finalPy);
+                }
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            }
+
+            // 3. Draw Points
+            points.forEach(p => {
+                const px = p.xRatio * w;
+                const py = p.yRatio * h;
+
+                ctx.beginPath();
+                ctx.fillStyle = p.color;
+                ctx.arc(px, py, 10, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            });
+
+            updateFormulaDisplay();
+        }
+
+        // Interaction
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+            const w = canvas.width;
+            const h = canvas.height;
+
+            points.forEach(p => {
+                const px = p.xRatio * w;
+                const py = p.yRatio * h;
+                const dist = Math.hypot(px - mx, py - my);
+                if (dist < 20) {
+                    draggingPoint = p;
+                }
+            });
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (draggingPoint) {
+                const rect = canvas.getBoundingClientRect();
+                const my = e.clientY - rect.top;
+                const h = canvas.height;
+
+                draggingPoint.yRatio = Math.max(0.1, Math.min(0.9, my / h));
+                draw();
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            draggingPoint = null;
+        });
+
+        function updateFormulaDisplay() {
+            formulaDisplay.innerHTML = "P(x) = Σ yᵢ · Lᵢ(x)";
+        }
+
+    </script>
+</body>
+
+</html>

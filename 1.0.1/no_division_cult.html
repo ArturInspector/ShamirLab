@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Benchmark: Affine vs Projective</title>
+    <style>
+        body {
+            background: #111;
+            color: #eee;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Nav Bar */
+        .nav-bar {
+            width: 100%;
+            height: 60px;
+            background: #1a1a1a;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0;
+            z-index: 1000;
+        }
+
+        .nav-link {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .nav-link:hover {
+            color: #3b82f6;
+        }
+
+        .nav-link.active {
+            color: #3b82f6;
+        }
+
+        /* MAIN LAYOUT */
+        .main-content {
+            display: flex;
+            flex: 1;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* LEFT: VISUALIZATION */
+        .viz-panel {
+            flex: 1;
+            background: #111;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-right: 1px solid #333;
+            flex-direction: column;
+        }
+
+        /* RIGHT: THEORY */
+        .theory-panel {
+            width: 400px;
+            min-width: 350px;
+            background: #0a0a0a;
+            padding: 30px;
+            overflow-y: auto;
+            border-left: 1px solid #333;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            color: #3b82f6;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.5rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-top: 30px;
+        }
+
+        p {
+            line-height: 1.6;
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        /* RACE TRACKS */
+        .race-container {
+            display: flex;
+            gap: 40px;
+            align-items: flex-end;
+            height: 500px;
+        }
+
+        .track {
+            width: 120px;
+            height: 100%;
+            background: #222;
+            border-left: 4px dashed #444;
+            border-right: 4px dashed #444;
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .track-label {
+            position: absolute;
+            top: -40px;
+            width: 200px;
+            text-align: center;
+            font-weight: bold;
+            color: #888;
+        }
+
+        .brick-truck {
+            width: 80px;
+            height: 100px;
+            background: #444;
+            border-radius: 8px;
+            position: absolute;
+            bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            transition: bottom 0.2s linear;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border: 2px solid #555;
+            color: #fff;
+        }
+
+        .brick-truck.slow {
+            border-color: #ff4d4f;
+            background: #2a1111;
+        }
+
+        .brick-truck.fast {
+            border-color: #27ae60;
+            background: #112a1a;
+        }
+
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .slow .status-badge {
+            background: #ff4d4f;
+            color: #fff;
+        }
+
+        .fast .status-badge {
+            background: #27ae60;
+            color: #fff;
+        }
+
+        .stop-sign {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #ff4d4f;
+            color: white;
+            padding: 5px 10px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            display: none;
+            z-index: 10;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .btn {
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 30px;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+            transform: scale(1.05);
+        }
+
+        .btn:disabled {
+            background: #444;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .next-btn {
+            display: block;
+            margin-top: 30px;
+            padding: 15px;
+            background: #222;
+            color: #3b82f6;
+            text-align: center;
+            text-decoration: none;
+            border: 1px solid #3b82f6;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .next-btn:hover {
+            background: #3b82f6;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="nav-bar">
+        <a href="index.html" class="nav-link">🏠 Карта</a>
+        <span class="nav-link active">Этаж 1: Фундамент</span>
+        <a href="zk_pinball_madness.html" class="nav-link">Далее →</a>
+    </nav>
+
+    <div class="main-content">
+
+        <!-- VISUALIZATION LEFT -->
+        <div class="viz-panel">
+            <div class="race-container">
+                <!-- SLOW TRACK -->
+                <div class="track" id="track-slow">
+                    <div class="track-label">Обычная Стройка<br><span style="color:#ff4d4f; font-size:0.8em;">(Affine
+                            Coordinates)</span></div>
+                    <div class="brick-truck slow" id="truck-slow">
+                        🧱
+                        <div class="status-badge" id="badge-slow">Ready</div>
+                    </div>
+                    <div class="stop-sign" id="stop-msg">ПИЛИМ КИРПИЧ... (DIV)</div>
+                </div>
+
+                <!-- FAST TRACK -->
+                <div class="track" id="track-fast">
+                    <div class="track-label">Потоковый Метод<br><span
+                            style="color:#27ae60; font-size:0.8em;">(Projective Coordinates)</span></div>
+                    <div class="brick-truck fast" id="truck-fast">
+                        🏗️
+                        <div class="status-badge" id="badge-fast">Ready</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" id="start-btn" onclick="startRace()">Запустить Стройку</button>
+        </div>
+
+        <!-- THEORY RIGHT -->
+        <div class="theory-panel">
+            <h1>Фундамент (Fields)</h1>
+
+            <p>Мы начинаем строительство нашего ZK-небоскреба. Первый этаж — это математический фундамент.</p>
+
+            <h2>1. Алмитовые Кирпичи</h2>
+            <p>В нашем мире мы не используем обычные числа. Мы используем <strong>Конечные Поля</strong> (Finite
+                Fields).</p>
+            <p>Представь, что все наши кирпичи сделаны из сверх-прочного материала "Алмит". Их <strong>нельзя
+                    распилить</strong> (поделить).</p>
+
+            <h2>2. Проблема Деления</h2>
+            <p>Если тебе нужно "поделить" 5 на 2, ты не можешь получить 2.5. Дробных кирпичей не существует!</p>
+            <p>Тебе приходится искать "Обратный Кирпич" — такой, который при умножении на 2 даст 5 (по модулю нашей
+                вселенной).</p>
+            <p>Это сложная операция (Modular Inversion). Это как подбирать ключ к замку. Это <strong>очень
+                    медленно</strong>.</p>
+
+            <h2>3. Решение: Проективная Геометрия</h2>
+            <p>Вместо того чтобы страдать с делением на каждом шаге (как левый грузовик), мы используем трюк.</p>
+            <p>Мы добавляем третье измерение $Z$. Теперь, вместо того чтобы делить, мы просто умножаем $Z$.</p>
+            <p>Посмотри на гонку. Левый грузовик "пилит" кирпичи (делит). Правый — просто складывает их в 3D
+                (Z-координата) и летит вперед.</p>
+
+            <a href="zk_pinball_madness.html" class="next-btn">Этаж 2: Схемы и Трубы →</a>
+        </div>
+    </div>
+
+    <script>
+        const TOTAL_FLOORS = 10;
+        const TRACK_SIZE = 400; // px height of movement
+        const STEP = TRACK_SIZE / TOTAL_FLOORS;
+
+        // Costs in ms
+        const COST_DIV = 600; // Slow sawing
+        const COST_MUL = 50;  // Fast stacking
+
+        let raceRunning = false;
+
+        function startRace() {
+            if (raceRunning) return;
+            raceRunning = true;
+            document.getElementById('start-btn').disabled = true;
+
+            resetTruck('truck-slow', 'badge-slow');
+            resetTruck('truck-fast', 'badge-fast');
+
+            runSlowTruck();
+            runFastTruck();
+        }
+
+        function resetTruck(id, badgeId) {
+            document.getElementById(id).style.bottom = '10px';
+            document.getElementById(badgeId).innerText = "Go!";
+        }
+
+        // SLOW (Affine)
+        async function runSlowTruck() {
+            const truck = document.getElementById('truck-slow');
+            const badge = document.getElementById('badge-slow');
+            const stopSign = document.getElementById('stop-msg');
+
+            for (let i = 1; i <= TOTAL_FLOORS; i++) {
+                // Work (Division)
+                badge.innerText = "Inverting...";
+                stopSign.style.display = 'block';
+                truck.style.opacity = "0.5";
+
+                await sleep(COST_DIV);
+
+                stopSign.style.display = 'none';
+                truck.style.opacity = "1";
+                badge.innerText = "Adding " + i;
+
+                // Move
+                truck.style.bottom = (10 + i * STEP) + 'px';
+                await sleep(50);
+            }
+            badge.innerText = "Done";
+            checkFinish();
+        }
+
+        // FAST (Projective)
+        async function runFastTruck() {
+            const truck = document.getElementById('truck-fast');
+            const badge = document.getElementById('badge-fast');
+
+            for (let i = 1; i <= TOTAL_FLOORS; i++) {
+                // Work (Multiplication only)
+                badge.innerText = "Mul...";
+                await sleep(COST_MUL * 3); // A bit of mul work, but faster than div
+
+                // Move
+                truck.style.bottom = (10 + i * STEP) + 'px';
+                badge.innerText = "Floor " + i;
+            }
+            badge.innerText = "WINNER";
+            checkFinish();
+        }
+
+        let finishedCount = 0;
+        function checkFinish() {
+            finishedCount++;
+            if (finishedCount >= 2) {
+                raceRunning = false;
+                document.getElementById('start-btn').disabled = false;
+                finishedCount = 0;
+            }
+        }
+
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+    </script>
+</body>
+
+</html>

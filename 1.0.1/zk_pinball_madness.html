@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ZK PINBALL MADNESS</title>
+    <style>
+        body {
+            background: #111;
+            color: #eee;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Nav Bar */
+        .nav-bar {
+            width: 100%;
+            height: 60px;
+            background: #1a1a1a;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0;
+            z-index: 1000;
+        }
+
+        .nav-link {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .nav-link:hover {
+            color: #00ff88;
+        }
+
+        .nav-link.active {
+            color: #00ff88;
+        }
+
+        /* MAIN LAYOUT */
+        .main-content {
+            display: flex;
+            flex: 1;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* LEFT: VISUALIZATION */
+        .viz-panel {
+            flex: 1;
+            background: #001100;
+            /* Dark Green Circuit Board */
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-right: 1px solid #333;
+            overflow: hidden;
+        }
+
+        /* RIGHT: THEORY */
+        .theory-panel {
+            width: 400px;
+            min-width: 350px;
+            background: #0a0a0a;
+            padding: 30px;
+            overflow-y: auto;
+            border-left: 1px solid #333;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            color: #00ff88;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.5rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-top: 30px;
+        }
+
+        p {
+            line-height: 1.6;
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        .next-btn {
+            display: block;
+            margin-top: 30px;
+            padding: 15px;
+            background: #222;
+            color: #00ff88;
+            text-align: center;
+            text-decoration: none;
+            border: 1px solid #00ff88;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .next-btn:hover {
+            background: #00ff88;
+            color: #000;
+        }
+
+        /* HUD */
+        #ui-layer {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            pointer-events: none;
+            z-index: 10;
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border: 1px solid #00ff88;
+            color: #00ff88;
+        }
+    </style>
+    <!-- MATTER.JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+</head>
+
+<body>
+
+    <nav class="nav-bar">
+        <a href="index.html" class="nav-link">🏠 Карта</a>
+        <a href="no_division_cult.html" class="nav-link">← Назад</a>
+        <span class="nav-link active">Этаж 2: Схемы</span>
+        <a href="polynomial_factory.html" class="nav-link">Далее →</a>
+    </nav>
+
+    <div class="main-content">
+
+        <!-- VISUALIZATION LEFT -->
+        <div class="viz-panel" id="canvas-container">
+            <div id="ui-layer">
+                Signal Integrity: <span id="score">100</span>%<br>
+                Short Circuits: <span id="errors">0</span>
+            </div>
+        </div>
+
+        <!-- THEORY RIGHT -->
+        <div class="theory-panel">
+            <h1>Электрика и Трубы</h1>
+
+            <p>Вы на 2-м этаже. Здесь мы прокладываем логику всего здания.</p>
+
+            <h2>1. Арифметические Схемы</h2>
+            <p>Компьютерные программы обычно имеют циклы и условия (`if/else`). Но ZK не умеет доказывать "ветвления".
+            </p>
+            <p>Поэтому мы превращаем программу в <strong>Жесткую Схему</strong> (Circuit). Как водопровод.</p>
+            <ul>
+                <li>Провода — это значения (числа).</li>
+                <li>Вентили (Gates) — это операции ($+$, $*$).</li>
+            </ul>
+
+            <h2>2. Электроны (Witness)</h2>
+            <p>Слева ты видишь симуляцию потока данных.</p>
+            <p><span style="color:#00ff88">Зеленые электроны</span> — это честные вычисления ($2+2=4$).</p>
+            <p><span style="color:#ff3333">Красные электроны</span> — это сбои или попытки взлома ($2+2=5$).</p>
+
+            <h2>3. Constraints (Ограничения)</h2>
+            <p>Стены схемы не дают электронам вылететь. Это наши <strong>Restrictions</strong>.</p>
+            <p>Твоя задача — кликать на <strong>КРАСНЫЕ</strong> шары, чтобы уничтожать сбои до того, как они попадут в
+                процессор.</p>
+
+            <a href="polynomial_factory.html" class="next-btn">Этаж 3: Чертеж Крыши →</a>
+        </div>
+    </div>
+
+    <script>
+        const Engine = Matter.Engine,
+            Render = Matter.Render,
+            Runner = Matter.Runner,
+            Bodies = Matter.Bodies,
+            Composite = Matter.Composite,
+            Events = Matter.Events,
+            Mouse = Matter.Mouse,
+            MouseConstraint = Matter.MouseConstraint,
+            Body = Matter.Body;
+
+        // --- SETUP ---
+        const engine = Engine.create();
+        const world = engine.world;
+        engine.gravity.y = 0.5;
+
+        // Render inside viz-panel
+        const container = document.getElementById('canvas-container');
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+
+        const render = Render.create({
+            element: container,
+            engine: engine,
+            options: {
+                width: w,
+                height: h,
+                wireframes: false,
+                background: '#001100' // Dark board
+            }
+        });
+
+        Render.run(render);
+        const runner = Runner.create();
+        Runner.run(runner, engine);
+
+        // --- CIRCUIT BOARD DESIGN ---
+        const wallOpts = { isStatic: true, render: { fillStyle: '#004400' }, friction: 0 };
+
+        // Funnels
+        Composite.add(world, [
+            Bodies.rectangle(w * 0.3, h * 0.5, 20, 400, { ...wallOpts, angle: 0.2 }),
+            Bodies.rectangle(w * 0.7, h * 0.5, 20, 400, { ...wallOpts, angle: -0.2 })
+        ]);
+
+        // Pegs (Gates)
+        const rows = 5;
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < 6; j++) {
+                if (i % 2 === j % 2) continue;
+                Composite.add(world, Bodies.circle(
+                    w * 0.35 + j * 50,
+                    h * 0.3 + i * 60,
+                    8,
+                    { isStatic: true, render: { fillStyle: '#008800' } }
+                ));
+            }
+        }
+
+        // --- LOGIC ---
+        let score = 100;
+        let errors = 0;
+
+        setInterval(() => {
+            const isBad = Math.random() < 0.3;
+            const ball = Bodies.circle(
+                w / 2 + (Math.random() - 0.5) * 100,
+                -20,
+                10,
+                {
+                    label: isBad ? 'bad' : 'good',
+                    restitution: 0.8,
+                    render: {
+                        fillStyle: isBad ? '#ff3333' : '#00ffff',
+                        strokeStyle: '#fff',
+                        lineWidth: 2
+                    }
+                }
+            );
+            Composite.add(world, ball);
+        }, 800);
+
+        // Click to destroy bad signals
+        const mouse = Mouse.create(render.canvas);
+        const mc = MouseConstraint.create(engine, {
+            mouse: mouse,
+            constraint: { render: { visible: false } }
+        });
+
+        // We only want click detection, not dragging really, but dragging is fun
+        Composite.add(world, mc);
+
+        Events.on(mc, 'mousedown', (event) => {
+            const mousePos = event.mouse.position;
+            const bodies = Composite.allBodies(world);
+            const clicked = bodies.filter(b => Matter.Bounds.contains(b.bounds, mousePos) && Matter.Vertices.contains(b.vertices, mousePos));
+
+            clicked.forEach(b => {
+                if (b.label === 'bad') {
+                    Composite.remove(world, b);
+                    score = Math.min(100, score + 5);
+                    updateUI();
+                } else if (b.label === 'good') {
+                    // Penalty for destroying good signal
+                    score = Math.max(0, score - 10);
+                    updateUI();
+                }
+            });
+        });
+
+        // Cleanup & Scoring
+        Events.on(engine, 'beforeUpdate', () => {
+            const bodies = Composite.allBodies(world);
+            bodies.forEach(b => {
+                if (b.position.y > h + 50) {
+                    Composite.remove(world, b);
+                    if (b.label === 'bad') {
+                        errors++;
+                        score -= 10;
+                        updateUI();
+                    }
+                }
+            });
+        });
+
+        function updateUI() {
+            document.getElementById('score').innerText = score;
+            document.getElementById('errors').innerText = errors;
+        }
+
+        window.onresize = () => {
+            render.canvas.width = container.clientWidth;
+            render.canvas.height = container.clientHeight;
+        };
+
+    </script>
+</body>
+
+</html>

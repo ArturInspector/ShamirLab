@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZK Learning Odyssey</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #06b6d4;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            max-width: 800px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            padding: 20px;
+            max-width: 1200px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent-primary);
+        }
+
+        .card-number {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-secondary);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin: 0 0 12px 0;
+            font-weight: 700;
+        }
+
+        .card-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .card-status {
+            margin-top: 16px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Abstract Background shapes */
+        .bg-shape {
+            position: fixed;
+            z-index: -1;
+            filter: blur(80px);
+            opacity: 0.4;
+        }
+
+        .shape-1 {
+            top: -10%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+        }
+
+        .shape-2 {
+            bottom: -10%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: var(--accent-secondary);
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<div class="bg-shape shape-1"></div>
+<div class="bg-shape shape-2"></div>
+
+<header class="hero">
+    <h1>FORTRESS BUTERINKA</h1>
+    <p class="subtitle">
+        Строим Небоскреб Истины (ZK).<br>
+        От фундамента из кирпичей до пентхауса аттестации.
+    </p>
+</header>
+
+<main class="grid-container">
+
+    <!-- Floor 1 -->
+    <a href="no_division_cult.html" class="card">
+        <div class="card-number">ЭТАЖ 01</div>
+        <h2 class="card-title">Фундамент (LEGO)</h2>
+        <p class="card-desc">
+            Конечные Поля. Здесь мы лепим кирпичи, которые нельзя разделить. Основа всей стройки.
+        </p>
+        <div class="card-status">
+            <div class="status-dot"></div> Готово
+        </div>
+    </a>
+
+    <!-- Floor 2 -->
+    <a href="zk_pinball_madness.html" class="card">
+        <div class="card-number">ЭТАЖ 02</div>
+        <h2 class="card-title">Электрика и Трубы</h2>
+        <p class="card-desc">
+            Арифметические Схемы. Прокладываем проводку (Wires) и ставим вентили (Gates). Логика здания.
+        </p>
+        <div class="card-status">
+            <div class="status-dot"></div> Готово
+        </div>
+    </a>
+
+    <!-- Floor 3 -->
+    <a href="polynomial_factory.html" class="card">
+        <div class="card-number">ЭТАЖ 03</div>
+        <h2 class="card-title">Чертеж Крыши</h2>
+        <p class="card-desc">
+            Интерполяция. Как накрыть кучу торчащих балок одной идеальной волнистой крышей (Полином).
+        </p>
+        <div class="card-status">
+            <div class="status-dot"></div> Готово
+        </div>
+    </a>
+
+    <!-- Floor 4 -->
+    <a href="trace_to_polynomial.html" class="card">
+        <div class="card-number">ЭТАЖ 04</div>
+        <h2 class="card-title">Журнал Прораба</h2>
+        <p class="card-desc">
+            Trace -> Poly. Превращаем скучные отчеты о работе в математическую формулу.
+        </p>
+        <div class="card-status">
+            <div class="status-dot"></div> Готово
+        </div>
+    </a>
+
+    <!-- Floor 5 -->
+    <a href="merkle_dogs.html" class="card">
+        <div class="card-number">ЭТАЖ 05</div>
+        <h2 class="card-title">Злой Вахтер</h2>
+        <p class="card-desc">
+            Меркл-дерево. Вахтер (Root) следит, чтобы никто не украл кирпичи со стройки.
+        </p>
+        <div class="card-status">
+            <div class="status-dot"></div> Готово
+        </div>
+    </a>
+
+    <!-- Floor 6 -->
+    <a href="zk_decompression.html" class="card">
+        <div class="card-number">ЭТАЖ 06</div>
+        <h2 class="card-title">Чемодан</h2>
+        <p class="card-desc">
+            ZK Декомпрессия. Как упаковать целый дом в один чемодан для отправки заказчику.
+        </p>
+        <div class="card-status">
+            <div class="status-dot"></div> Готово
+        </div>
+    </a>
+
+    <!-- Floor 7 -->
+    <a href="zk_proving_matrix.html" class="card" style="border-color: var(--accent-secondary);">
+        <div class="card-number" style="color: var(--accent-secondary);">ЭТАЖ 07</div>
+        <h2 class="card-title">Краш-Тест (FRI)</h2>
+        <p class="card-desc">
+            Сворачиваем чертежи в оригами. Проверяем прочность конструкции случайными ударами.
+        </p>
+        <div class="card-status">
+            <div class="status-dot"
+                style="background: var(--accent-secondary); box-shadow: 0 0 8px var(--accent-secondary);"></div>
+            Активно
+        </div>
+    </a>
+
+    <!-- Floor 8 -->
+    <a href="attestation_citadel.html" class="card">
+        <div class="card-number">ПЕНТХАУС</div>
+        <h2 class="card-title">Цитадель Бутеринка</h2>
+        <p class="card-desc">
+            Аттестация. Финальная проверка. Если прораб не врал, мы получаем ключи от города (Ethereum).
+        </p>
+        <div class="card-status">
+            <div class="status-dot"></div> Скоро
+        </div>
+    </a>
+
+</main>
+
+<footer style="margin-top: 40px; color: var(--text-secondary); padding-bottom: 20px;">
+    &copy; 2026 Fortress Buterinka. Built with Math & Concrete.
+</footer>
+
+</body>
+
+</html>
