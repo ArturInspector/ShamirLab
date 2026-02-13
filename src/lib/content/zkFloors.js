@@ -1,5 +1,29 @@
 export const zkFloors = [
   {
+    id: 'floor-00',
+    number: 'ЛОББИ',
+    title: 'Добро пожаловать в ZK',
+    description:
+      'Что такое Zero-Knowledge доказательства? Начни путь с самых основ без сложной математики.',
+    status: 'ready',
+    accent: 'primary',
+    route: 'zk/intro',
+    source: 'intro.html',
+    tags: ['basics', 'intro'],
+  },
+  {
+    id: 'playground',
+    number: 'ПЕСОЧНИЦА',
+    title: 'Playground',
+    description:
+      'Поиграй с commit-reveal схемой. Создай секрет, закоммить его, раскрой когда захочешь.',
+    status: 'ready',
+    accent: 'secondary',
+    route: 'zk/playground',
+    source: 'playground.html',
+    tags: ['interactive', 'commit-reveal'],
+  },
+  {
     id: 'floor-01',
     number: 'ЭТАЖ 01',
     title: 'Фундамент (LEGO)',
@@ -96,7 +120,7 @@ export const zkFloors = [
 
 export const zkLanding = {
   id: 'zk',
-  title: 'FORTRESS BUTERINKA',
-  subtitle: 'Строим Небоскреб Истины (ZK). От фундамента до аттестации.',
+  title: 'КРЕПОСТЬ БУТЕРИНКА',
+  subtitle: 'Строим Крепость Истины (ZK). От фундамента до финальной аттестации.',
   route: 'zk',
 };
