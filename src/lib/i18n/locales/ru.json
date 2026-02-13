@@ -352,6 +352,11 @@
       "invalidMessage": "Сообщение должно быть числом меньше n",
       "encryptionFailed": "Ошибка шифрования: {reason}"
     }
+  },
+  "footer": {
+    "moreProjects": "Больше проектов",
+    "createdBy": "Создано",
+    "buterinWatching": "Бутерин следит за вами 👁️"
   }
 }
 

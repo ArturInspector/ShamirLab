@@ -352,6 +352,11 @@
       "invalidMessage": "Билдирүү nден кичине сан болушу керек",
       "encryptionFailed": "Шифрлөө катасы: {reason}"
     }
+  },
+  "footer": {
+    "moreProjects": "Көбүрөөк проекттер",
+    "createdBy": "Түзгөн",
+    "buterinWatching": "Бутерин сени карап жатат 👁️"
   }
 }
 
