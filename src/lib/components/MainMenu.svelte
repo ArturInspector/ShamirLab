@@ -228,34 +228,12 @@
     z-index: 1;
   }
   
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(96, 165, 250, 0.1) 0%, transparent 70%);
-    animation: rotate 20s linear infinite;
-    pointer-events: none;
-  }
-  
-  @keyframes rotate {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  
   .hero-title {
     font-size: 3rem;
     font-weight: 700;
     color: var(--text-formula);
     margin: 0 0 1rem 0;
     font-family: var(--font-heading);
-    text-shadow: 0 0 30px rgba(96, 165, 250, 0.5);
     position: relative;
     z-index: 1;
     letter-spacing: -0.03em;

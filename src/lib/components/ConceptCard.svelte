@@ -5,7 +5,7 @@
 </script>
 
 <button class="concept-card" class:coming-soon={!available} on:click={onClick}>
-  <div class="icon">{concept.icon || 'RSA'}</div>
+  <div class="icon">{(concept.id || 'SL').toUpperCase().slice(0, 3)}</div>
   <div class="content">
     <h3 class="title">{concept.title}</h3>
     <p class="description">{concept.description}</p>
@@ -56,8 +56,8 @@
   
   .concept-card:hover {
     border-color: var(--accent-blue);
-    box-shadow: 0 4px 20px rgba(96, 165, 250, 0.4), 0 0 30px rgba(96, 165, 250, 0.2);
-    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
     background: var(--bg-hover);
   }
   
@@ -66,9 +66,20 @@
   }
   
   .icon {
-    font-size: 3rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    letter-spacing: 0.05em;
+    color: #60a5fa;
     flex-shrink: 0;
-    filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.3));
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(96, 165, 250, 0.25);
+    border-radius: 8px;
+    background: rgba(96, 165, 250, 0.06);
   }
   
   .content {
