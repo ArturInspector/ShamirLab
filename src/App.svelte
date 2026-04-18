@@ -8,6 +8,7 @@
   import KeyPairGame from './lib/components/KeyPairGame.svelte';
   import RSACity from './lib/components/RSACity/RSACity.svelte';
   import ZKRouter from './lib/components/zk/ZKRouter.svelte';
+  import PQCPage from './lib/components/pqc/PQCPage.svelte';
   
   let currentRoute = 'home';
   
@@ -53,6 +54,8 @@
     <KeyPairGame />
   {:else if currentRoute === 'rsa-city'}
     <RSACity />
+  {:else if currentRoute === 'pqc'}
+    <PQCPage />
   {:else if currentRoute.startsWith('zk')}
     <ZKRouter route={currentRoute} />
   {:else}

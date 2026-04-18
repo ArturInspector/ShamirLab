@@ -45,6 +45,13 @@
       description: $tStore('concepts.nonce.description'),
       icon: $tStore('concepts.nonce.icon'),
       available: false
+    },
+    {
+      id: 'pqc',
+      title: 'Post-Quantum Crypto',
+      description: 'Квантовые компьютеры придут и сломают RSA. ML-KEM, ML-DSA, FALCON, SPHINCS+ — четыре алгоритма которые переживут апокалипсис.',
+      icon: '⚛️',
+      available: true
     }
   ];
   
