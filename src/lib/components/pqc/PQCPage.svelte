@@ -409,6 +409,187 @@
     </div>
   </section>
 
+  <!-- Lattice Deep Dive -->
+  <section class="section">
+    <h2 class="section-title">Что такое решётка — без математики</h2>
+    <div class="lattice-box">
+      <div class="lattice-text">
+        <p>
+          Решётка — это бесконечная регулярная сетка точек в N-мерном пространстве.
+          В двух измерениях это выглядит как клетчатая бумага в тетради. В 1024 измерениях
+          человеческий мозг отказывается строить образ, и это хорошо — именно на этом строится безопасность.
+        </p>
+        <p>
+          Ключевая задача: <strong>CVP (Closest Vector Problem)</strong> — дан произвольный вектор,
+          найди ближайшую к нему точку решётки. В двух измерениях — очевидно. В 1024 —
+          ни один известный алгоритм не справляется за разумное время.
+        </p>
+        <p>
+          LWE превращает это в криптографию: секрет прячется как "почти" точка решётки,
+          смещённая на маленький случайный шум. Без знания шума — задача CVP.
+          Знаешь шум — находишь секрет за миллисекунды.
+        </p>
+        <div class="lattice-note">
+          Почему квантовый компьютер не помогает: алгоритм Шора ускоряет факторизацию, но не CVP.
+          Для решёточных задач квантовые алгоритмы дают в лучшем случае квадратичное ускорение — недостаточно.
+        </div>
+      </div>
+      <div class="lattice-vis">
+        <svg viewBox="0 0 160 140" class="lattice-svg" aria-hidden="true">
+          <!-- Grid lines -->
+          {#each [20,50,80,110,140] as x}
+            <line x1={x} y1="10" x2={x} y2="130" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          {/each}
+          {#each [20,50,80,110,130] as y}
+            <line x1="10" y1={y} x2="150" y2={y} stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          {/each}
+          <!-- Lattice points -->
+          {#each [[20,20],[50,20],[80,20],[110,20],[140,20],[20,50],[50,50],[80,50],[110,50],[140,50],[20,80],[50,80],[80,80],[110,80],[140,80],[20,110],[50,110],[80,110],[110,110],[140,110],[20,130],[50,130],[80,130],[110,130],[140,130]] as [x,y]}
+            <circle cx={x} cy={y} r="2.5" fill="#60a5fa" opacity="0.7"/>
+          {/each}
+          <!-- Secret vector (nearest lattice point) -->
+          <circle cx="80" cy="80" r="4" fill="#60a5fa"/>
+          <!-- Target (noisy) vector -->
+          <circle cx="94" cy="68" r="4" fill="#f59e0b"/>
+          <!-- Arrow from target to nearest -->
+          <line x1="94" y1="68" x2="82" y2="78" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <!-- Labels -->
+          <text x="97" y="64" fill="#f59e0b" font-size="9" font-family="monospace">b (публ.)</text>
+          <text x="55" y="96" fill="#60a5fa" font-size="9" font-family="monospace">s (секрет)</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Algorithm Evolution -->
+  <section class="section">
+    <h2 class="section-title">Эволюция алгоритмов</h2>
+    <p class="section-subtitle">
+      Каждое поколение криптографии начиналось с "это не сломают". Потом ломали.
+    </p>
+    <div class="evo-list">
+      <div class="evo-item">
+        <div class="evo-era">1970-е</div>
+        <div class="evo-content">
+          <strong>DES</strong> — 56-битный симметричный ключ. Казался надёжным. В 1997 году взломан
+          брутфорсом за 22 часа на специальном железе. Заменён AES-128/256 (2001).
+          <span class="evo-status dead">Мёртв</span>
+        </div>
+      </div>
+      <div class="evo-item">
+        <div class="evo-era">1977</div>
+        <div class="evo-content">
+          <strong>RSA</strong> — первая асимметричная система. Безопасность на факторизации.
+          30 лет был стандартом. Уязвим к алгоритму Шора на квантовом компьютере.
+          <span class="evo-status dying">Устаревает</span>
+        </div>
+      </div>
+      <div class="evo-item">
+        <div class="evo-era">1990-е</div>
+        <div class="evo-content">
+          <strong>ECC</strong> — те же свойства что RSA, ключи в 10 раз меньше. Ethereum, Bitcoin.
+          Алгоритм Шора ломает его так же, как RSA — дискретный логарифм на эллиптических кривых.
+          <span class="evo-status dying">Устаревает</span>
+        </div>
+      </div>
+      <div class="evo-item">
+        <div class="evo-era">2024</div>
+        <div class="evo-content">
+          <strong>ML-KEM, ML-DSA, FN-DSA, SLH-DSA</strong> — стандарты NIST. Основа: решёточные
+          задачи и хэш-функции. Нет известной квантовой атаки, сопоставимой с алгоритмом Шора.
+          <span class="evo-status live">Актуальны</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Real Attack Vectors -->
+  <section class="section">
+    <h2 class="section-title">Реальные векторы атак — не квантовые</h2>
+    <p class="section-subtitle">
+      Пока индустрия готовится к квантовым компьютерам 2040-х, атакуют обычным кодом прямо сейчас.
+    </p>
+    <div class="vectors-grid">
+      <div class="vector-card">
+        <div class="vector-tag">РЕАЛИЗАЦИИ</div>
+        <h4>Ошибки в коде, не в математике</h4>
+        <p>OpenSSL, GnuTLS, LibreSSL содержали и содержат критические CVE. Heartbleed (2014) —
+        не атака на RSA, обычное чтение за пределы буфера. Утекло содержимое памяти 500K+ серверов.</p>
+      </div>
+      <div class="vector-card">
+        <div class="vector-tag">ТАЙМИНГ</div>
+        <h4>Время ответа как сигнал</h4>
+        <p>Если реализация работает чуть дольше на некоторых входных данных — злоумышленник
+        восстанавливает ключ по времени ответа. ECDSA в Sony PS3 содержала такую ошибку.
+        Через неё сломали защиту приставки.</p>
+      </div>
+      <div class="vector-card">
+        <div class="vector-tag">NONCE</div>
+        <h4>Повторный nonce = конец</h4>
+        <p>ECDSA и EdDSA: если один nonce используется дважды с разными сообщениями —
+        приватный ключ восстанавливается тривиально. В 2013 году так взломали Android
+        Bitcoin-кошельки из-за слабого PRNG.</p>
+      </div>
+      <div class="vector-card">
+        <div class="vector-tag">ИНФРАСТРУКТУРА</div>
+        <h4>BGP и DNS как вектор</h4>
+        <p>В 2018 году перехватили BGP-маршруты Amazon Route 53, подменили DNS,
+        перенаправили трафик ethereum-кошельков на фишинговый сайт. Никакой криптографии —
+        чистая инфраструктура. Потери: $152K ETH.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Real Breaches -->
+  <section class="section">
+    <h2 class="section-title">Кого ломали — факты</h2>
+    <div class="table-wrap">
+      <table class="compare-table breaches-table">
+        <thead>
+          <tr>
+            <th>Год</th>
+            <th>Инцидент</th>
+            <th>Вектор</th>
+            <th>Последствия</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="b-year">2008</td>
+            <td><span class="t-name">Debian OpenSSL</span></td>
+            <td>Слабый PRNG — 32 768 возможных ключей вместо миллиардов</td>
+            <td>Все SSH-ключи за два года скомпрометированы</td>
+          </tr>
+          <tr>
+            <td class="b-year">2013</td>
+            <td><span class="t-name">Android Bitcoin</span></td>
+            <td>Повторный nonce в ECDSA из-за Java SecureRandom</td>
+            <td>Прямые потери BTC у пользователей кошельков</td>
+          </tr>
+          <tr>
+            <td class="b-year">2014</td>
+            <td><span class="t-name">Heartbleed</span></td>
+            <td>Чтение за пределы буфера в OpenSSL TLS-расширении</td>
+            <td>Память серверов, приватные ключи, пароли пользователей</td>
+          </tr>
+          <tr>
+            <td class="b-year">2018</td>
+            <td><span class="t-name">Amazon Route 53</span></td>
+            <td>BGP hijack → DNS подмена → фишинг</td>
+            <td>$152K ETH, MyEtherWallet пользователи</td>
+          </tr>
+          <tr>
+            <td class="b-year">2022</td>
+            <td><span class="t-name">SIKE / SIDH</span></td>
+            <td>Математическая атака Castryck–Decru на изогении</td>
+            <td>Алгоритм снят с рассмотрения NIST за 62 минуты</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">Паттерн: почти ни один крупный взлом — не атака на математику алгоритма. Реализации, инфраструктура, человеческие ошибки.</p>
+  </section>
+
   <!-- Bottom CTA -->
   <section class="section bottom-nav">
     <a href="#/" class="back-btn">← На главную</a>
@@ -1082,6 +1263,168 @@
     font-size: 0.85rem;
     color: var(--text-tertiary);
     font-style: italic;
+  }
+
+  /* Lattice section */
+  .lattice-box {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 32px;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-dark);
+    border-radius: 14px;
+    padding: 24px;
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 680px) {
+    .lattice-box {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .lattice-text p {
+    color: var(--text-secondary);
+    font-size: 0.93rem;
+    line-height: 1.65;
+    margin: 0 0 12px 0;
+  }
+
+  .lattice-note {
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
+    border-top: 1px solid var(--border-dark);
+    padding-top: 12px;
+    margin-top: 4px;
+    line-height: 1.55;
+  }
+
+  .lattice-vis {
+    display: flex;
+    justify-content: center;
+  }
+
+  .lattice-svg {
+    width: 160px;
+    height: 140px;
+  }
+
+  /* Evolution */
+  .evo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 1.2rem;
+    border: 1px solid var(--border-dark);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .evo-item {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border-dark);
+  }
+
+  .evo-item:last-child {
+    border-bottom: none;
+  }
+
+  .evo-era {
+    min-width: 72px;
+    padding: 16px;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    background: rgba(255, 255, 255, 0.02);
+    border-right: 1px solid var(--border-dark);
+    display: flex;
+    align-items: flex-start;
+    flex-shrink: 0;
+  }
+
+  .evo-content {
+    padding: 16px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .evo-content strong {
+    color: var(--text-primary);
+  }
+
+  .evo-status {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+
+  .evo-status.dead { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+  .evo-status.dying { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+  .evo-status.live { background: rgba(34,211,153,0.12); color: #34d399; border: 1px solid rgba(34,211,153,0.3); }
+
+  /* Attack vectors */
+  .vectors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-top: 1.2rem;
+  }
+
+  .vector-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-dark);
+    border-radius: 12px;
+    padding: 18px;
+  }
+
+  .vector-tag {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+    margin-bottom: 8px;
+  }
+
+  .vector-card h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
+  }
+
+  .vector-card p {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Breaches table */
+  .breaches-table .b-year {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+
+  .breaches-table td {
+    font-size: 0.87rem;
   }
 
   /* Bottom nav */
