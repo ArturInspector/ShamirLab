@@ -49,8 +49,8 @@
     {
       id: 'pqc',
       title: 'Post-Quantum Crypto',
-      description: 'Квантовые компьютеры придут и сломают RSA. ML-KEM, ML-DSA, FALCON, SPHINCS+ — четыре алгоритма которые переживут апокалипсис.',
-      icon: '⚛️',
+      description: 'NIST стандартизировал 4 алгоритма в 2024. ML-KEM, ML-DSA, FALCON, SPHINCS+. RSA и ECC уязвимы к алгоритму Шора.',
+      icon: 'PQC',
       available: true
     }
   ];
